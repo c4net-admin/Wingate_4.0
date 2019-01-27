@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="panel_bg">#CCFFFFFF</color>
+    <color name="blue">#00f</color>
+    <color name="red">#f00</color>
+    <color name="black">#000</color>
+    <color name="white">#fff</color>
+    
+    <color name="message_green">#a3edb1</color>
+    
+    <color name="chat_text_field">#60ffffff</color>
+    <color name="tab_text_selected">#63ed7c</color>
+    <color name="my_message_background">#a8f5b6</color>
+    <color name="tab_text_unselected">#108d27</color>
+    <color name="tab_indicator">#63ed7c</color>
+    
+    
+</resources>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/buttons_panel_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:maxHeight="@dimen/max_panel_size"
+        android:orientation="vertical"
+        android:padding="@dimen/panel_padding" >
+
+        <ImageView
+            android:id="@+id/enemy_btn"
+            android:layout_width="@dimen/btn_size"
+            android:layout_height="@dimen/btn_size"
+            android:background="@drawable/ic_enemy_btn"
+            android:clickable="true"
+            android:maxHeight="@dimen/btn_size"
+            android:onClick="menuButtonAction"
+            android:scaleType="centerInside"
+            android:src="@drawable/panel_button_selector" />
+
+        <ImageView
+            android:id="@+id/ally_btn"
+            android:layout_width="@dimen/btn_size"
+            android:layout_height="@dimen/btn_size"
+            android:background="@drawable/ic_ally_btn"
+            android:clickable="true"
+            android:maxHeight="@dimen/btn_size"
+            android:onClick="menuButtonAction"
+            android:scaleType="centerInside"
+            android:src="@drawable/panel_button_selector" />
+
+        <ImageView
+            android:id="@+id/ruller_btn"
+            android:layout_width="@dimen/btn_size"
+            android:layout_height="@dimen/btn_size"
+            android:background="@drawable/ic_ruler_btn"
+            android:clickable="true"
+            android:maxHeight="@dimen/btn_size"
+            android:onClick="menuButtonAction"
+            android:scaleType="centerInside"
+            android:src="@drawable/panel_button_selector" />
+
+        <ImageView
+            android:id="@+id/polygon_btn"
+            android:layout_width="@dimen/btn_size"
+            android:layout_height="@dimen/btn_size"
+            android:background="@drawable/ic_polygon_btn"
+            android:clickable="true"
+            android:maxHeight="@dimen/btn_size"
+            android:onClick="menuButtonAction"
+            android:scaleType="centerInside"
+            android:src="@drawable/panel_button_selector" />
+
+        <ImageView
+            android:id="@+id/map_mode"
+            android:layout_width="@dimen/btn_size"
+            android:layout_height="@dimen/btn_size"
+            android:background="@drawable/ic_layer_btn"
+            android:clickable="true"
+            android:maxHeight="@dimen/btn_size"
+            android:onClick="menuButtonAction"
+            android:scaleType="centerInside"
+            android:src="@drawable/button_no_ring_selector" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/chat_container"
+        android:layout_width="@dimen/btn_size"
+        android:layout_height="@dimen/btn_size"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/panel_padding"
+        android:background="@drawable/ic_chat_btn"
+        android:clickable="true"
+        android:onClick="menuButtonAction" >
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/chat_btn"
+        android:layout_width="@dimen/btn_size"
+        android:layout_height="@dimen/btn_size"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/panel_padding"
+        android:clickable="true"
+        android:onClick="menuButtonAction"
+        android:src="@drawable/chat_ring"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/trash_marker_icon"
+        android:layout_width="@dimen/btn_size"
+        android:layout_height="@dimen/btn_size"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/chat_container"
+        android:layout_marginBottom="85dp"
+        android:alpha="0.0"
+        android:background="@drawable/ic_bin_empty" />
+
+    <FrameLayout
+        android:id="@+id/chat_fragment"
+        android:layout_width="500dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true" />
+
+    <FrameLayout
+        android:id="@+id/status_fragment"
+        android:layout_width="500dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" >
+    </FrameLayout>
+
+    <View
+        android:id="@+id/test_arrow"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:background="#f00"
+        android:visibility="gone" />
+
+</RelativeLayout>

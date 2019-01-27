@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/message_margin" >
+
+    <View
+        android:id="@+id/side_arrow"
+        android:layout_width="@dimen/chat_side"
+        android:layout_height="@dimen/chat_side"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/chat_side_left" />
+
+    <View
+        android:id="@+id/place_holder"
+        android:layout_width="100dp"
+        android:layout_height="5dp"
+        android:layout_alignParentRight="true" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/side_arrow"
+        android:background="@drawable/mine_message_bg"
+        android:orientation="vertical"
+        android:padding="@dimen/message_padding" >
+
+        <TextView
+            android:id="@+id/owner_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/message_text_padding"
+            android:text="Owner Name"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/message_text_padding"
+            android:text="@string/me"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="@dimen/message_max_width"
+            android:padding="@dimen/message_text_padding"
+            android:text="bla bla bla bla bla bla bla bla bla bla bla bla"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+</RelativeLayout>

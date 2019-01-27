@@ -1,0 +1,203 @@
+package com.maatayim.acceleradio.status;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.maatayim.acceleradio.General;
+import com.maatayim.acceleradio.MainActivity;
+import com.maatayim.acceleradio.Prefs;
+import com.maatayim.acceleradio.R;
+import com.maatayim.acceleradio.mapshapes.LocationMarker;
+import com.maatayim.acceleradio.mapshapes.MyPolygon;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+public class SettingsFragment extends Fragment {
+
+	private static Context that;
+
+	protected static final String EXPORTED_MAPS_DIRECTORY = "Acceleradio" + File.separator + "ExportedMaps" + File.separator;
+	private File mapFile;
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.settings_fragment, container, false);
+		initStatusDataSettings(view);
+		return view;
+	}
+
+	private void initStatusDataSettings(View view) {
+		Switch customMapMode = (Switch) view.findViewById(R.id.customMapMode);
+		customMapMode.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked){
+					Prefs.SHOW_CUSTOM_MAP_MODE = true;
+				}else{
+					Prefs.SHOW_CUSTOM_MAP_MODE = false;
+				}
+			}
+		});
+
+		Button clearMap = (Button) view.findViewById(R.id.clearMap);
+		clearMap.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				that = getActivity().getApplicationContext();
+				clearMap();
+				Toast.makeText(that, "Map Cleared!", Toast.LENGTH_SHORT).show();
+			}
+
+
+		});
+
+		Button saveMap = (Button) view.findViewById(R.id.saveMap);
+		saveMap.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				String currentDateandTime = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss", Locale.getDefault()).format(new Date());
+				exportMap(EXPORTED_MAPS_DIRECTORY + "map_"+currentDateandTime + ".gil");
+				Toast.makeText(getActivity(), "Map Saved!", Toast.LENGTH_SHORT).show();
+			}
+
+		});
+
+		Button loadMap = (Button) view.findViewById(R.id.loadMap);
+		loadMap.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				that = getActivity().getApplicationContext();
+				FileChooserFragment fileFragment = new FileChooserFragment();
+				fileFragment.show(getFragmentManager(), "fileChooser");
+			}
+		});
+
+		TextView versionNum = (TextView) view.findViewById(R.id.version_number);
+
+		try{ 
+			ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
+			ZipFile zf = new ZipFile(ai.sourceDir);
+			ZipEntry ze = zf.getEntry("classes.dex");
+			long time = ze.getTime();
+			String currentDateandTime = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(time);
+			zf.close();
+			versionNum.setText(currentDateandTime);
+		}catch(Exception e){
+		} 
+	}
+
+
+	protected void clearMap() {
+		Prefs.clearSharedPreferences(Prefs.SHAPES, that);
+		for (Entry<String, LocationMarker> m : Prefs.myMarkers.entrySet()){
+			LocationMarker lm = Prefs.myMarkers.remove(m.getKey());
+			lm.removeFromMap();
+		}
+		Prefs.myMarkers.clear();
+		for (Entry<MyPolygon, MyPolygon> poly : Prefs.polygons.entrySet()){
+			MyPolygon p = Prefs.polygons.remove(poly.getKey());
+			p.clear();
+		}
+		Prefs.polygons.clear();
+		Prefs.getInstance(getActivity()).getMyStatusLocations().clear();
+		Prefs.getInstance(getActivity()).getTheirStatusLocations().clear();
+		MyLocationsFragment.notifyChanges();
+		TheirLocationsFragment.notifyChanges();
+		MainActivity.allyCounter = 1;
+		MainActivity.enemyCounter = 1;
+
+	}
+
+	public void exportMap(String fileName){
+		try {
+			createFileOnDevice(fileName,false);
+			writeToFile("markers\n");
+			for (Entry<String, LocationMarker> lm : Prefs.myMarkers.entrySet()){
+				if (!lm.getValue().isL()){
+					String s = lm.getValue().toString().substring(0,lm.getValue().toString().length()-1);
+					writeToFile(s + lm.getValue().getAge() + ",\n");
+				}
+			}
+			writeToFile("polygons\n");
+			for (Entry<MyPolygon, MyPolygon> poly : Prefs.polygons.entrySet()){
+				writeToFile(poly.getValue().toString());
+			}
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Map<String, String> m;
+		m = new HashMap<String, String>();
+		m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "UTIL: " + "Map exported");
+		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
+		Prefs.getInstance(getActivity()).addStatusMessages(m);
+
+		LogFragment.notifyChanges();
+	}
+
+
+	public static BufferedWriter out;
+	private void createFileOnDevice(String filename, Boolean append) throws IOException {
+		/*
+		 * Function to initially create the log file and it also writes the time of creation to file.
+		 */
+		File Root = Environment.getExternalStorageDirectory();
+		if(Root.canWrite()){
+			new File(Root, EXPORTED_MAPS_DIRECTORY).mkdirs();
+			mapFile = new File(Root, filename);
+			FileWriter mapWriter = new FileWriter(mapFile, append);
+			out = new BufferedWriter(mapWriter); 
+		}
+	}
+
+	public void writeToFile(String message){
+		try {
+			out.write(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//update android files media scanner for the log files being visible without rebooting
+		MediaScannerConnection.scanFile(getActivity(), new String[] {
+
+			mapFile.getAbsolutePath()},
+
+			null, new MediaScannerConnection.OnScanCompletedListener() {
+
+			public void onScanCompleted(String path, Uri uri){
+			}
+
+		});
+	}
+
+
+}
