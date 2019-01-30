@@ -95,8 +95,6 @@ public class MainActivity extends Activity
 implements OnMapClickListener, LocationListener, OnSmsSent,
 OnMarkerDragListener, OnMarkerClickListener{
 
-
-
 	private Animation trash_animation;
 	private float[] results = new float[2];
 	private SlidingMenu chatView, statusView;
