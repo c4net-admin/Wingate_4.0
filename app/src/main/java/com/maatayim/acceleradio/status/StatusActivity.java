@@ -16,7 +16,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,7 +29,7 @@ import com.maatayim.acceleradio.mapshapes.MyPolygon;
 import com.maatayim.acceleradio.utils.DisplayUtils;
 import com.maatayim.acceleradio.utils.SlidingTabLayout;
 
-public class StatusActivity extends ActionBarActivity  implements FileChooserFragment.OnFileSelectedListener {
+public class StatusActivity extends AppCompatActivity implements FileChooserFragment.OnFileSelectedListener {
 
 	private static final String TAG = "200apps.StatusActivity";
 	private ViewPager mViewPager;

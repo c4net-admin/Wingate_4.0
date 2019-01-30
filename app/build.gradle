@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 26
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.maatayim.acceleradio"
-        minSdkVersion 16
-        targetSdkVersion 21
+        minSdkVersion 19
+        targetSdkVersion 26
     }
 
     buildTypes {
@@ -19,14 +19,14 @@ android {
 }
 
 dependencies {
-    compile files('libs/usbserial.jar')
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.google.android.gms:play-services-maps:10.0.1'
-    compile 'com.android.support:recyclerview-v7:25.0.1'
-    compile 'com.google.android.gms:play-services-location:10.0.1'
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
+    implementation files('libs/usbserial.jar')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.google.android.gms:play-services-maps:10.0.1'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.google.android.gms:play-services-location:10.0.1'
+    implementation('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
         // exclusion is not necessary, but generally a good idea.
         exclude group: 'com.google.android', module: 'support-v4'
     }
-    compile project(path: ':slidingMenu')
+    implementation project(path: ':slidingMenu')
 }

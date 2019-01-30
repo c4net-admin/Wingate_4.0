@@ -1,5 +1,6 @@
 package com.maatayim.acceleradio;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -20,6 +22,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -169,32 +173,39 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 		initButtons();
 
-		// FIXME: 12/14/16 Callback
-		((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
-			@Override
-			public void onMapReady(GoogleMap googleMap) {
-				map = googleMap;
-				if (map == null) {
-					finish();
-					return;
-				}
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.WRITE_EXTERNAL_STORAGE},100);
 
-				initMarkerEnum();
-				mapSettings();
-				initMapsDirectory();
-				initChatView();
-				initStatusView();
-				loadSavedMap();
+		}else {
 
-				//usb data income handler
-				mHandler = new MyHandler(MainActivity.this);
-			}
-		});
+            // FIXME: 12/14/16 Callback
+            ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    map = googleMap;
+                    if (map == null) {
+                        finish();
+                        return;
+                    }
 
-		fusedLocationService = new FusedLocationService(MainActivity.this.getApplicationContext(), MainActivity.this);
+                    initMarkerEnum();
+                    mapSettings();
+                    initMapsDirectory();
+                    initChatView();
+                    initStatusView();
+                    loadSavedMap();
 
-		Prefs.layoutInflater = getLayoutInflater();
+                    //usb data income handler
+                    mHandler = new MyHandler(MainActivity.this);
+                }
+            });
 
+            fusedLocationService = new FusedLocationService(MainActivity.this.getApplicationContext(), MainActivity.this);
+
+            Prefs.layoutInflater = getLayoutInflater();
+        }
 	}
 
 
@@ -221,7 +232,9 @@ OnMarkerDragListener, OnMarkerClickListener{
 	@Override
 	protected void onStart() {
 		super.onStart();
-		fusedLocationService.startListening();
+		if (fusedLocationService !=null) {
+            fusedLocationService.startListening();
+        }
 	}
 
 

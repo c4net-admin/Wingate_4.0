@@ -37,7 +37,7 @@ public class UsbService extends Service
 	public static final String ACTION_CDC_DRIVER_NOT_WORKING ="com.felhr.connectivityservices.ACTION_CDC_DRIVER_NOT_WORKING";
 	public static final String ACTION_USB_DEVICE_NOT_WORKING = "com.felhr.connectivityservices.ACTION_USB_DEVICE_NOT_WORKING";
 	
-	private static final int BAUD_RATE = 9600; // BaudRate. Change this value if you need
+	private static final int BAUD_RATE = 57600; // BaudRate. Change this value if you need
 	public static final int MESSAGE_FROM_SERIAL_PORT = 0;
 	
 	public static boolean SERVICE_CONNECTED = false;
@@ -93,8 +93,11 @@ public class UsbService extends Service
 	 */
 	public void write(byte[] data)
 	{
-		if(serialPort != null)
+		if(serialPort != null) {
 			serialPort.write(data);
+			String dataFormated = new String(data, Charset.forName("UTF-8"));
+			Log.d("Vova "+"write", "data: "+dataFormated);
+		}
 	}
 	
 	public void setHandler(Handler mHandler)
@@ -172,6 +175,7 @@ public class UsbService extends Service
 		public void onReceivedData(byte[] arg0) 
 		{
 			String data = new String(arg0, Charset.forName("UTF-8"));
+			Log.d("Vova "+"USB", "Log: "+data);
 			if(mHandler != null)
 				mHandler.obtainMessage(MESSAGE_FROM_SERIAL_PORT,data).sendToTarget();
 		}

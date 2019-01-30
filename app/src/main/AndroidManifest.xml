@@ -4,9 +4,6 @@
     android:versionCode="120"
     android:versionName="1.2" >
 
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="21" />
 
     <uses-feature
         android:name="android.hardware.usb.host"
