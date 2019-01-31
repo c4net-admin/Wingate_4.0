@@ -25,8 +25,10 @@ public class Prefs {
     public static final String ATTRIBUTE_MARKER_NAME = "name";
     public static final String SHAPES = "shapes";
     public static final String MY_LOCATION_TYPE = "my_location_type";
+    public static final String MY_MAC_ADDRESS = "my_mac_address";
     public static final String LAST_LATITUDE = "last_latitude";
     public static final String LAST_LONGITUDE = "last_longitude";
+    public static final String USER_INFO = "user_info";
     public static final String MARKERS = "markers";
     public static final String POLYGONS = "polygons";
     public static final String CHAT = "chat";
@@ -128,7 +130,13 @@ public class Prefs {
         return toLocations;
     }
 
-    public static void setSharedPreferencesString(String pref, String key, Set<String> values, Context context) {
+    public static void setSharedPreferencesString(String pref, String key, String value, Context context) {
+        SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+    public static void setSharedPreferencesStringSet(String pref, String key, Set<String> values, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putStringSet(key, values);
@@ -149,7 +157,11 @@ public class Prefs {
         editor.commit();
     }
 
-    public static Set<String> getSharedPreferences(String pref, String key, Context context) {
+    public static String getSharedPreferencesString(String pref, String key, Context context) {
+        SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
+        return sp.getString(key, null);
+    }
+    public static Set<String> getSharedPreferencesStringSet(String pref, String key, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         return sp.getStringSet(key, null);
     }

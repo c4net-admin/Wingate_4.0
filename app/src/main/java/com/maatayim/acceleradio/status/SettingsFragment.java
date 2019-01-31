@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +29,7 @@ import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.R;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.mapshapes.MyPolygon;
+import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,11 +44,14 @@ import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static com.maatayim.acceleradio.General.getApkVersionName;
+import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
+
 public class SettingsFragment extends Fragment {
 
 	private static Context that;
 
-	protected static final String EXPORTED_MAPS_DIRECTORY = "Acceleradio" + File.separator + "ExportedMaps" + File.separator;
+	protected static final String EXPORTED_MAPS_DIRECTORY = ROOT_FOLDER + File.separator + "ExportedMaps" + File.separator;
 	private File mapFile;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,8 +80,7 @@ public class SettingsFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				that = getActivity().getApplicationContext();
-				clearMap();
-				Toast.makeText(that, "Map Cleared!", Toast.LENGTH_SHORT).show();
+				MapUtils.clearMap(getContext());
 			}
 
 
@@ -106,13 +110,10 @@ public class SettingsFragment extends Fragment {
 		});
 
 		TextView versionNum = (TextView) view.findViewById(R.id.version_number);
-
 		try {
-			PackageInfo pInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
-			String version = pInfo.versionName;
-			versionNum.setText(version);
+			versionNum.setText(getApkVersionName(getContext()));
 		} catch (PackageManager.NameNotFoundException e) {
-			e.printStackTrace();
+			Log.e("getApkVersionName","Version NameNotFoundException "+e.getMessage());
 		}
 
 
@@ -128,12 +129,12 @@ public class SettingsFragment extends Fragment {
 //		}
 
 		Spinner spinner = view.findViewById(R.id.my_location_type_spinner);
-		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,getContext());
+		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.USER_INFO,Prefs.MY_LOCATION_TYPE,getContext());
 		spinner.setSelection(myLocationType);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Prefs.setSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,position,getContext());
+				Prefs.setSharedPreferencesInt(Prefs.USER_INFO,Prefs.MY_LOCATION_TYPE,position,getContext());
 			}
 
 			@Override
@@ -145,26 +146,6 @@ public class SettingsFragment extends Fragment {
 	}
 
 
-	protected void clearMap() {
-		Prefs.clearSharedPreferences(Prefs.SHAPES, that);
-		for (Entry<String, LocationMarker> m : Prefs.myMarkers.entrySet()){
-			LocationMarker lm = Prefs.myMarkers.remove(m.getKey());
-			lm.removeFromMap();
-		}
-		Prefs.myMarkers.clear();
-		for (Entry<MyPolygon, MyPolygon> poly : Prefs.polygons.entrySet()){
-			MyPolygon p = Prefs.polygons.remove(poly.getKey());
-			p.clear();
-		}
-		Prefs.polygons.clear();
-		Prefs.getInstance(getActivity()).getMyStatusLocations().clear();
-		Prefs.getInstance(getActivity()).getTheirStatusLocations().clear();
-		MyLocationsFragment.notifyChanges();
-		TheirLocationsFragment.notifyChanges();
-		MainActivity.allyCounter = 1;
-		MainActivity.enemyCounter = 1;
-
-	}
 
 	public void exportMap(String fileName){
 		try {

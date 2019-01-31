@@ -1,13 +1,19 @@
 package com.maatayim.acceleradio.log;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.maatayim.acceleradio.General;
+import com.maatayim.acceleradio.LogFile;
 import com.maatayim.acceleradio.MainActivity;
 import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.mapshapes.MyLocationMarker;
 import com.maatayim.acceleradio.utils.FormatException;
+import com.maatayim.acceleradio.utils.MapUtils;
+
+import java.util.HashMap;
 
 public class Location extends LogEntry {
 
@@ -97,10 +103,24 @@ public class Location extends LogEntry {
 
     @Override
     public void handle(Activity mainActivity, ImageView button) {
+        String myMac = Prefs.getPreference(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,mainActivity);
+
         if (me) {
+
+            //TODO when there will be new function get self hw info implement same flow there
+            // Check if the me is same as saved me or reset map and log file
+            if (!TextUtils.isEmpty(myMac) && macAddress.equals(myMac)){
+                MapUtils.clearMap(mainActivity);
+                LogFile.resetInstance();
+            }
+
+
+
+            Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,macAddress,mainActivity);
+
             MyLocationMarker.setC4NetMarker(((MainActivity) mainActivity).map, latlng);
 
-            int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS, Prefs.MY_LOCATION_TYPE, mainActivity);
+            int myLocationType = Prefs.getSharedPreferencesInt(Prefs.USER_INFO, Prefs.MY_LOCATION_TYPE, mainActivity);
             switch (myLocationType) {
                 case MyLocationMarker.C4NET_LOCATION:
                     MyLocationMarker.setDeviceMarkerVisible(false);
@@ -127,6 +147,18 @@ public class Location extends LogEntry {
             }
 
         } else {
+
+            // Check if the location is not me from other device
+            if (!TextUtils.isEmpty(myMac) && macAddress.equals(myMac)){
+                HashMap<String, String> m = new HashMap<String, String>();
+                String error = "Error: Location Of Me from External src";
+                m.put(Prefs.ATTRIBUTE_STATUS_TEXT, error);
+                m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
+                Prefs.getInstance(mainActivity).addStatusMessages(m);
+                LogFile.getInstance(mainActivity).appendLog(error);
+                return;
+            }
+
             String[] s = entry.split(",");
             entry = "I";
             for (int i = 1; i < 7; i++) {

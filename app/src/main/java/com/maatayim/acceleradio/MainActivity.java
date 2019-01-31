@@ -91,6 +91,8 @@ import java.util.Set;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
+import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
+
 
 public class MainActivity extends Activity
 implements OnMapClickListener, LocationListener, OnSmsSent,
@@ -133,7 +135,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 	private static final String MAP_EXTENSION = ".png";
 	protected static final int MARKER_NAME_LENGTH = 10;
 	public static final String MY_MAC_ADDRESS = "0000";
-	private static final String MAPS_DIRECTORY = "Acceleradio"+File.separator+"Maps"+File.separator;
+	private static final String MAPS_DIRECTORY = ROOT_FOLDER+File.separator+"Maps"+File.separator;
 
 	boolean isFirstLocationChange = true;
 	protected String markersName;
@@ -575,7 +577,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 
 	private void loadChat() {
-		Set<String> chat = Prefs.getSharedPreferences(Prefs.CHAT, Prefs.MESSAGES, getApplicationContext());
+		Set<String> chat = Prefs.getSharedPreferencesStringSet(Prefs.CHAT, Prefs.MESSAGES, getApplicationContext());
 		if (chat == null){
 			return;
 		}
@@ -599,7 +601,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 
 	private void loadPolygons() {
-		Set<String> polygons = Prefs.getSharedPreferences(Prefs.SHAPES, Prefs.POLYGONS, getApplicationContext());
+		Set<String> polygons = Prefs.getSharedPreferencesStringSet(Prefs.SHAPES, Prefs.POLYGONS, getApplicationContext());
 
 		drawPolygons(polygons);
 	}
@@ -621,7 +623,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 
 	public void loadMarkers(){
-		Set<String> markers = Prefs.getSharedPreferences(Prefs.SHAPES, Prefs.MARKERS, getApplicationContext());
+		Set<String> markers = Prefs.getSharedPreferencesStringSet(Prefs.SHAPES, Prefs.MARKERS, getApplicationContext());
 		if (markers == null){
 			return;
 		}
@@ -706,7 +708,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		if (!chatMsgs.isEmpty()){
 			chatMsgs.substring(0, chatMsgs.length()-1);
 			chat.add(chatMsgs);
-			Prefs.setSharedPreferencesString(Prefs.CHAT, Prefs.MESSAGES, chat, getApplicationContext());
+			Prefs.setSharedPreferencesStringSet(Prefs.CHAT, Prefs.MESSAGES, chat, getApplicationContext());
 		}
 	}
 
@@ -720,7 +722,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		if (polygonDrawing){
 			markers.add(polygon.toString());
 		}
-		Prefs.setSharedPreferencesString(Prefs.SHAPES, Prefs.POLYGONS, markers, getApplicationContext());
+		Prefs.setSharedPreferencesStringSet(Prefs.SHAPES, Prefs.POLYGONS, markers, getApplicationContext());
 
 	}
 
@@ -732,7 +734,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		for (Entry<String, LocationMarker> lm : Prefs.myMarkers.entrySet()){
 			markers.add(lm.getValue().toString());
 		}
-		Prefs.setSharedPreferencesString(Prefs.SHAPES, Prefs.MARKERS, markers, getApplicationContext());
+		Prefs.setSharedPreferencesStringSet(Prefs.SHAPES, Prefs.MARKERS, markers, getApplicationContext());
 		
 		Prefs.setPreference(Prefs.MARKER_INDEX, Prefs.INDEX, ""+(allyCounter + enemyCounter), getApplicationContext());
 	}
@@ -836,7 +838,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		map.getUiSettings().setZoomControlsEnabled(false);
 		MyLocationMarker.setDeviceMarker(map, mapCenter);
 
-		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS, Prefs.MY_LOCATION_TYPE, this);
+		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.USER_INFO, Prefs.MY_LOCATION_TYPE, this);
 		switch (myLocationType) {
 			case MyLocationMarker.C4NET_LOCATION:
 				MyLocationMarker.setDeviceMarkerVisible(false);

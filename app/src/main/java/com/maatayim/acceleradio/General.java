@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.text.format.DateFormat;
 
@@ -105,5 +108,10 @@ public class General {
 
 	public static String getNowTimeLong() {
 		return ""+new Date().getTime();
+	}
+
+	public static String getApkVersionName(Context context) throws PackageManager.NameNotFoundException {
+		PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+		return pInfo.versionName;
 	}
 }
