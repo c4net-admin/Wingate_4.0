@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/settings_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/customMapModeText"
@@ -14,9 +16,9 @@
         android:id="@+id/customMapMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@id/customMapModeText"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/customMapModeText"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp" />
 
@@ -24,61 +26,82 @@
         android:id="@+id/clearMap"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/customMapModeText"
-        android:layout_alignStart="@+id/customMapModeText"
         android:layout_below="@+id/customMapModeText"
+        android:layout_alignStart="@+id/customMapModeText"
+        android:layout_alignLeft="@+id/customMapModeText"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:text="@string/clear_map_button_text" />
-    
+
     <Button
         android:id="@+id/saveMap"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/clearMap"
-        android:layout_alignStart="@+id/clearMap"
         android:layout_below="@+id/clearMap"
+        android:layout_alignStart="@+id/clearMap"
+        android:layout_alignLeft="@+id/clearMap"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:text="@string/save_map_button_text" />
-    
-     <Button
+
+    <Button
         android:id="@+id/loadMap"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/saveMap"
-        android:layout_alignStart="@+id/saveMap"
         android:layout_below="@+id/saveMap"
+        android:layout_alignStart="@+id/saveMap"
+        android:layout_alignLeft="@+id/saveMap"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:text="@string/load_map_button_text" />
-    
-    
-     <TextView
+
+
+    <TextView
         android:id="@+id/version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/version_number"
         android:layout_alignBottom="@+id/version_number"
-        android:layout_marginRight="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_toLeftOf="@+id/version_number"
+        android:layout_marginRight="20dp"
         android:layout_toStartOf="@+id/version_number"
+        android:layout_toLeftOf="@+id/version_number"
         android:text="@string/version_text" />
 
     <TextView
         android:id="@+id/version_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/customMapMode"
+        android:layout_alignRight="@+id/customMapMode"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignRight="@+id/customMapMode"
-        android:layout_alignEnd="@+id/customMapMode"
-        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
         android:text="666" />
-   
+
+    <TextView
+        android:id="@+id/my_location_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loadMap"
+
+        android:layout_alignLeft="@+id/loadMap"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/location_source" />
+
+    <Spinner
+        android:id="@+id/my_location_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loadMap"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/my_location_text"
+        android:entries="@array/location_source_arrays" />
+
 
 </RelativeLayout>

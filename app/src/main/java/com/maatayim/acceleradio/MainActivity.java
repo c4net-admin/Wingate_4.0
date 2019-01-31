@@ -66,6 +66,7 @@ import com.maatayim.acceleradio.log.Sms;
 import com.maatayim.acceleradio.maps.CustomMapTileProvider;
 import com.maatayim.acceleradio.maps.MapFolder;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
+import com.maatayim.acceleradio.mapshapes.MyLocationMarker;
 import com.maatayim.acceleradio.mapshapes.MyPolygon;
 import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
@@ -194,6 +195,7 @@ OnMarkerDragListener, OnMarkerClickListener{
                     initChatView();
                     initStatusView();
                     loadSavedMap();
+                    initMapViewLocation();
 
                     //usb data income handler
                     mHandler = new MyHandler(MainActivity.this);
@@ -206,6 +208,10 @@ OnMarkerDragListener, OnMarkerClickListener{
         }
 	}
 
+	private void initMapViewLocation() {
+
+		//TODO Open last known location
+	}
 
 
 	@Override
@@ -700,7 +706,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		if (!chatMsgs.isEmpty()){
 			chatMsgs.substring(0, chatMsgs.length()-1);
 			chat.add(chatMsgs);
-			Prefs.setSharedPreferences(Prefs.CHAT, Prefs.MESSAGES, chat, getApplicationContext());
+			Prefs.setSharedPreferencesString(Prefs.CHAT, Prefs.MESSAGES, chat, getApplicationContext());
 		}
 	}
 
@@ -714,7 +720,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		if (polygonDrawing){
 			markers.add(polygon.toString());
 		}
-		Prefs.setSharedPreferences(Prefs.SHAPES, Prefs.POLYGONS, markers, getApplicationContext());
+		Prefs.setSharedPreferencesString(Prefs.SHAPES, Prefs.POLYGONS, markers, getApplicationContext());
 
 	}
 
@@ -726,7 +732,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		for (Entry<String, LocationMarker> lm : Prefs.myMarkers.entrySet()){
 			markers.add(lm.getValue().toString());
 		}
-		Prefs.setSharedPreferences(Prefs.SHAPES, Prefs.MARKERS, markers, getApplicationContext());
+		Prefs.setSharedPreferencesString(Prefs.SHAPES, Prefs.MARKERS, markers, getApplicationContext());
 		
 		Prefs.setPreference(Prefs.MARKER_INDEX, Prefs.INDEX, ""+(allyCounter + enemyCounter), getApplicationContext());
 	}
@@ -825,8 +831,14 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 	public void initMapPosition(LatLng mapCenter){
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, Parameters.ZOOM_LEVEL));
+		map.setMyLocationEnabled(false);
 		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		map.getUiSettings().setZoomControlsEnabled(false);
+
+		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,this);
+		if (myLocationType == MyLocationMarker.PHONE_LOCATION) {
+			MyLocationMarker locationMarker = new MyLocationMarker(map, mapCenter);
+		}
 	}
 
 

@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -112,7 +114,23 @@ public class SettingsFragment extends Fragment {
 			zf.close();
 			versionNum.setText(currentDateandTime);
 		}catch(Exception e){
-		} 
+		}
+
+		Spinner spinner = view.findViewById(R.id.my_location_type_spinner);
+		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,getContext());
+		spinner.setSelection(myLocationType);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Prefs.setSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,position,getContext());
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+
 	}
 
 

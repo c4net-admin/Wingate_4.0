@@ -6,7 +6,8 @@
     <color name="red">#f00</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
-    
+    <color name="green">#81c639</color>
+
     <color name="message_green">#a3edb1</color>
     
     <color name="chat_text_field">#60ffffff</color>

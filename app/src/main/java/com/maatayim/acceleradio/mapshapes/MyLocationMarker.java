@@ -8,7 +8,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.maatayim.acceleradio.R;
 
 public class MyLocationMarker {
-	
+
+	public static final int C4NET_LOCATION = 0;
+	public static final int PHONE_LOCATION = 1;
+	public static final int AVRAGE_LOCATION = 2;
 	private Marker marker;
 	
 	public MyLocationMarker(GoogleMap map, LatLng location){
