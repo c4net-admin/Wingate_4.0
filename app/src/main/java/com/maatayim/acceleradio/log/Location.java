@@ -119,6 +119,7 @@ public class Location extends LogEntry {
             Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,macAddress,mainActivity);
 
             MyLocationMarker.setC4NetMarker(((MainActivity) mainActivity).map, latlng);
+            MapUtils.addMyCurrentLocation(latlng,mainActivity);
 
             int myLocationType = Prefs.getSharedPreferencesInt(Prefs.USER_INFO, Prefs.MY_LOCATION_TYPE, mainActivity);
             switch (myLocationType) {

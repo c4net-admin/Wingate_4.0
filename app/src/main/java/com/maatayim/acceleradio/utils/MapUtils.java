@@ -3,6 +3,7 @@ package com.maatayim.acceleradio.utils;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.maatayim.acceleradio.MainActivity;
 import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
@@ -33,6 +34,10 @@ public class MapUtils {
         MainActivity.allyCounter = 1;
         MainActivity.enemyCounter = 1;
         Toast.makeText(context, "Map Cleared!", Toast.LENGTH_SHORT).show();
+    }
 
+    public static void addMyCurrentLocation(LatLng latLng, Context context){
+        Prefs.setSharedPreferencesDouble(Prefs.USER_INFO,Prefs.LAST_LATITUDE,latLng.latitude,context);
+        Prefs.setSharedPreferencesDouble(Prefs.USER_INFO,Prefs.LAST_LONGITUDE,latLng.longitude,context);
     }
 }

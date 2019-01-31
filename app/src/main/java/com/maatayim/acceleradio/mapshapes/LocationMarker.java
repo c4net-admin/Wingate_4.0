@@ -90,9 +90,9 @@ public class LocationMarker {
 	
 	public String getLocation(){
 		double lat = General.truncDouble(location.latitude, 5);
-		double lon = General.truncDouble(location.longitude, 5);
+		double lng = General.truncDouble(location.longitude, 5);
 		
-		return General.precisionFormat(lat, lon);
+		return General.precisionFormat(lat, lng);
 	}
 	
 	public String toString(){

@@ -72,6 +72,7 @@ import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
 import com.maatayim.acceleradio.status.StatusActivity;
 import com.maatayim.acceleradio.usbserial.UsbService;
+import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -199,6 +200,8 @@ OnMarkerDragListener, OnMarkerClickListener{
                     loadSavedMap();
                     initMapViewLocation();
 
+
+
                     //usb data income handler
                     mHandler = new MyHandler(MainActivity.this);
                 }
@@ -212,7 +215,14 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 	private void initMapViewLocation() {
 
-		//TODO Open last known location
+		//Open last known location
+		double lat = Prefs.getSharedPreferencesDouble(Prefs.USER_INFO,Prefs.LAST_LATITUDE,this);
+		double lng = Prefs.getSharedPreferencesDouble(Prefs.USER_INFO,Prefs.LAST_LONGITUDE,this);
+
+		// check its not null
+		if ((lat+lng)!=0){
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lng), Parameters.ZOOM_LEVEL));
+		}
 	}
 
 
@@ -832,13 +842,13 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 
 	public void initMapPosition(LatLng mapCenter){
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, Parameters.ZOOM_LEVEL));
 		map.setMyLocationEnabled(false);
 		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		map.getUiSettings().setZoomControlsEnabled(false);
 		MyLocationMarker.setDeviceMarker(map, mapCenter);
 
 		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.USER_INFO, Prefs.MY_LOCATION_TYPE, this);
+		MapUtils.addMyCurrentLocation(mapCenter,this);
 		switch (myLocationType) {
 			case MyLocationMarker.C4NET_LOCATION:
 				MyLocationMarker.setDeviceMarkerVisible(false);
@@ -1372,7 +1382,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		}
 
 		double lat = General.truncDouble(point.latitude, 5);
-		double lon = General.truncDouble(point.longitude, 5);
+		double lng = General.truncDouble(point.longitude, 5);
 
 		// tal 180407
 		//lon -= 671.08863; // 0.006598750076293946d;
@@ -1384,7 +1394,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		}
 
 		String s = "I,1," + mac +"," + id + "," + Prefs.markersEnum.get(markerStr) 
-				+ "," + General.precisionFormat(lat, lon) + "," + this.markersName + "\n";
+				+ "," + General.precisionFormat(lat, lng) + "," + this.markersName + "\n";
 		Icon icon = null;
 		try {
 			icon = new Icon(s);
