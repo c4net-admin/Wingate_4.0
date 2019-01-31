@@ -19,7 +19,6 @@ public class Location extends LogEntry {
     private String age;
     private String connectivity;
     private boolean me; //optional
-    private static MyLocationMarker marker;
 
 
     public Location(String str) throws FormatException {
@@ -99,16 +98,34 @@ public class Location extends LogEntry {
     @Override
     public void handle(Activity mainActivity, ImageView button) {
         if (me) {
+            MyLocationMarker.setC4NetMarker(((MainActivity) mainActivity).map, latlng);
+
             int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS, Prefs.MY_LOCATION_TYPE, mainActivity);
-            if (myLocationType == MyLocationMarker.C4NET_LOCATION) {
+            switch (myLocationType) {
+                case MyLocationMarker.C4NET_LOCATION:
+                    MyLocationMarker.setDeviceMarkerVisible(false);
+                    MyLocationMarker.setAvgMarkerVisible(false);
 
-                if (marker == null) {
-                    marker = new MyLocationMarker(((MainActivity) mainActivity).map, latlng);
-                } else {
-                    marker.updateLocation(latlng);
-                }
+                    MyLocationMarker.setC4netMarkerVisible(true);
 
+                    break;
+
+                case MyLocationMarker.AVRAGE_LOCATION:
+                    MyLocationMarker.setC4netMarkerVisible(false);
+                    MyLocationMarker.setDeviceMarkerVisible(false);
+
+                    MyLocationMarker.setAvgMarker(((MainActivity) mainActivity).map);
+                    MyLocationMarker.setAvgMarkerVisible(true);
+
+                    break;
+                case MyLocationMarker.DEVICE_LOCATION:
+                    MyLocationMarker.setC4netMarkerVisible(false);
+                    MyLocationMarker.setAvgMarkerVisible(false);
+
+                    MyLocationMarker.setDeviceMarkerVisible(true);
+                    break;
             }
+
         } else {
             String[] s = entry.split(",");
             entry = "I";

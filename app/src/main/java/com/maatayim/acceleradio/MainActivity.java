@@ -834,10 +834,31 @@ OnMarkerDragListener, OnMarkerClickListener{
 		map.setMyLocationEnabled(false);
 		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		map.getUiSettings().setZoomControlsEnabled(false);
+		MyLocationMarker.setDeviceMarker(map, mapCenter);
 
-		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,this);
-		if (myLocationType == MyLocationMarker.PHONE_LOCATION) {
-			MyLocationMarker locationMarker = new MyLocationMarker(map, mapCenter);
+		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS, Prefs.MY_LOCATION_TYPE, this);
+		switch (myLocationType) {
+			case MyLocationMarker.C4NET_LOCATION:
+				MyLocationMarker.setDeviceMarkerVisible(false);
+				MyLocationMarker.setAvgMarkerVisible(false);
+
+				MyLocationMarker.setC4netMarkerVisible(true);
+				break;
+
+			case MyLocationMarker.AVRAGE_LOCATION:
+				MyLocationMarker.setC4netMarkerVisible(false);
+				MyLocationMarker.setDeviceMarkerVisible(false);
+
+				MyLocationMarker.setAvgMarker(map);
+				MyLocationMarker.setAvgMarkerVisible(true);
+
+				break;
+			case MyLocationMarker.DEVICE_LOCATION:
+				MyLocationMarker.setC4netMarkerVisible(false);
+				MyLocationMarker.setAvgMarkerVisible(false);
+
+				MyLocationMarker.setDeviceMarkerVisible(true);
+				break;
 		}
 	}
 
