@@ -89,7 +89,6 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 
@@ -189,8 +188,8 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 		m.put(Prefs.ATTRIBUTE_MARKER_NAME, data[7]);
 		Prefs.getInstance(this).addStatusLocations(m);
 		Log.d(TAG, "addMarkerToList "+Prefs.getInstance(this).getMyStatusLocations());
-		Log.d("StatusActivity statusLocations toString: ", Prefs.getInstance(this).getMyStatusLocations().toString());
-		Log.d("addMarkerToList: ", m.get(Prefs.ATTRIBUTE_STATUS_TEXT));
+		Log.d("StatusActivity  ","statusLocations "+ Prefs.getInstance(this).getMyStatusLocations().toString());
+		Log.d("addMarkerToList ", m.get(Prefs.ATTRIBUTE_STATUS_TEXT));
 		MyLocationsFragment.notifyChanges();
 		String sNoAge = s.substring(0, s.lastIndexOf(","));
 		return sNoAge.substring(0, sNoAge.lastIndexOf(",")+1);

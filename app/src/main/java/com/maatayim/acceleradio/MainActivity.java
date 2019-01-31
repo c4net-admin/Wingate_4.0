@@ -401,6 +401,8 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 
 	public void onDataReceived(String msg) {
+		Log.d("Vova "+"USB", "Log: "+msg);
+
 		Map<String, String> m;
 		m = new HashMap<String, String>();
 		m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "RX: " + msg);
@@ -500,14 +502,12 @@ OnMarkerDragListener, OnMarkerClickListener{
 		try {
 			mapWriter = new FileWriter(f, true);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		BufferedWriter out = new BufferedWriter(mapWriter); 
 		try {
 			out.append('a');
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//update android files media scanner for the log files being visible without rebooting

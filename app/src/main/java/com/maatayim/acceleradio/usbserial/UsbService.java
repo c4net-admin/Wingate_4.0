@@ -175,7 +175,6 @@ public class UsbService extends Service
 		public void onReceivedData(byte[] arg0) 
 		{
 			String data = new String(arg0, Charset.forName("UTF-8"));
-			Log.d("Vova "+"USB", "Log: "+data);
 			if(mHandler != null)
 				mHandler.obtainMessage(MESSAGE_FROM_SERIAL_PORT,data).sendToTarget();
 		}

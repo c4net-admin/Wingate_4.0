@@ -6,7 +6,6 @@ public class AcceleradioAplication extends Application {
 	
 	@Override
 	public void onCreate() {
-		// TODO Auto-generated method stub
 		super.onCreate();
 		Prefs.clearSms();
 		Prefs.clearSharedPreferences(Prefs.CHAT, getApplicationContext());

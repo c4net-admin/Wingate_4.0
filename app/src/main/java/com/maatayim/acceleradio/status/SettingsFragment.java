@@ -2,6 +2,8 @@ package com.maatayim.acceleradio.status;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -105,16 +107,25 @@ public class SettingsFragment extends Fragment {
 
 		TextView versionNum = (TextView) view.findViewById(R.id.version_number);
 
-		try{ 
-			ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
-			ZipFile zf = new ZipFile(ai.sourceDir);
-			ZipEntry ze = zf.getEntry("classes.dex");
-			long time = ze.getTime();
-			String currentDateandTime = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(time);
-			zf.close();
-			versionNum.setText(currentDateandTime);
-		}catch(Exception e){
+		try {
+			PackageInfo pInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+			String version = pInfo.versionName;
+			versionNum.setText(version);
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
 		}
+
+
+//		try{
+//			ApplicationInfo ai = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
+//			ZipFile zf = new ZipFile(ai.sourceDir);
+//			ZipEntry ze = zf.getEntry("classes.dex");
+//			long time = ze.getTime();
+//			String currentDateandTime = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(time);
+//			zf.close();
+//			versionNum.setText(currentDateandTime);
+//		}catch(Exception e){
+//		}
 
 		Spinner spinner = view.findViewById(R.id.my_location_type_spinner);
 		int myLocationType = Prefs.getSharedPreferencesInt(Prefs.MARKERS,Prefs.MY_LOCATION_TYPE,getContext());
@@ -171,7 +182,6 @@ public class SettingsFragment extends Fragment {
 			}
 			out.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Map<String, String> m;

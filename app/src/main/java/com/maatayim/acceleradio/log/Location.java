@@ -142,7 +142,6 @@ public class Location extends LogEntry {
                 icon = new Icon(entry);
                 icon.setConnectivity(connectivity);
             } catch (FormatException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             icon.setLIcon(s[7]);
