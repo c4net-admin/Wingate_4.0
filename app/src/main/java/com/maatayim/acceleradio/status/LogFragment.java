@@ -12,15 +12,16 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
 import static com.maatayim.acceleradio.Prefs.ATTRIBUTE_STATUS_TIME;
 
 public class LogFragment extends Fragment {
-	
+
 	private static SimpleAdapter sAdapter;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class LogFragment extends Fragment {
 		initStatusDataMessages(view);
 		return view;
 	}
-	
+
 	private void initStatusDataMessages(View view) {
 		ArrayList<Map<String, String>> statusMessages = Prefs.getStatusMessages();
 
@@ -37,26 +38,28 @@ public class LogFragment extends Fragment {
 		lvSimple.setAdapter(sAdapter);
 		lvSimple.setSelection(statusMessages.size()-1);
 	}
-	
+
 	public static void notifyChanges(){
+		ArrayList<Map<String, String>> statusMessages = Prefs.getStatusMessages();
+		if (statusMessages != null){
+			Collections.sort(statusMessages, new ValueComparator());
+		}
+
+
 		if (sAdapter != null){
 			sAdapter.notifyDataSetChanged();
 		}
 	}
 
-	class ValueComparator implements Comparator<Map<String, String>> {
-		ArrayList<Map<String, String>> base;
+	static class ValueComparator implements Comparator<Map<String, String>> {
 
-		public ValueComparator(ArrayList<Map<String, String>> base) {
-			this.base = base;
-		}
 
 		// Note: this comparator imposes orderings that are inconsistent with
 		// equals.
 
 		@Override
 		public int compare(Map<String, String> o1, Map<String, String> o2) {
-			return o1.get(ATTRIBUTE_STATUS_TIME).compareToIgnoreCase(o2.get(ATTRIBUTE_STATUS_TIME));
+			return o1.get(ATTRIBUTE_STATUS_TIME).compareToIgnoreCase(o2.get(ATTRIBUTE_STATUS_TIME))*-1;
 		}
 	}
 }
