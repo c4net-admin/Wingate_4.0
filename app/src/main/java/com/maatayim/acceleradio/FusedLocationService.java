@@ -67,28 +67,28 @@ GoogleApiClient.OnConnectionFailedListener {
 		}
 
 	}
-	
-	
+
+
 
 	@Override
 	public void onLocationChanged(Location location) {
 //		Log.d(TAG, "onLocationChanged ");
-		locationListener.onLocationChanged(location);  
+		locationListener.onLocationChanged(location);
 		this.location = location;
 	}
-	
+
 
 	public Location getLocation() {
 		return this.location;
 	}
-	
+
 
 	@Override
 	public void onConnectionSuspended(int cause) {
 		Log.d(TAG, "onConnectionSuspended ");
 		isConnected = false;
 	}
-	
+
 
 	@Override
 	public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -103,8 +103,10 @@ GoogleApiClient.OnConnectionFailedListener {
 
 	}
 	public void stopListening(){
-		fusedLocationProviderApi.removeLocationUpdates(googleApiClient,
-				FusedLocationService.this);
+		if (fusedLocationProviderApi != null) {
+			fusedLocationProviderApi.removeLocationUpdates(googleApiClient,
+					FusedLocationService.this);
+		}
 		isListening = false;
 	}
 	

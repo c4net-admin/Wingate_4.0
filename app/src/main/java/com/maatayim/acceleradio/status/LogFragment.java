@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 
+import static com.maatayim.acceleradio.Prefs.ATTRIBUTE_STATUS_TIME;
+
 public class LogFragment extends Fragment {
 	
 	private static SimpleAdapter sAdapter;
@@ -29,7 +31,6 @@ public class LogFragment extends Fragment {
 	
 	private void initStatusDataMessages(View view) {
 		ArrayList<Map<String, String>> statusMessages = Prefs.getStatusMessages();
-		ValueComparator bvc = new ValueComparator(statusMessages);
 
 		sAdapter = new SimpleAdapter(getActivity(), statusMessages, R.layout.log_item_view ,Prefs.getFrom(), Prefs.getToMessages());
 		ListView lvSimple = (ListView) view.findViewById(R.id.statusListView);
@@ -43,7 +44,7 @@ public class LogFragment extends Fragment {
 		}
 	}
 
-	class ValueComparator implements Comparator<String> {
+	class ValueComparator implements Comparator<Map<String, String>> {
 		ArrayList<Map<String, String>> base;
 
 		public ValueComparator(ArrayList<Map<String, String>> base) {
@@ -52,9 +53,10 @@ public class LogFragment extends Fragment {
 
 		// Note: this comparator imposes orderings that are inconsistent with
 		// equals.
-		public int compare(String a, String b) {
-			return base.get(a).compareToIgnoreCase(base.get(b);
 
+		@Override
+		public int compare(Map<String, String> o1, Map<String, String> o2) {
+			return o1.get(ATTRIBUTE_STATUS_TIME).compareToIgnoreCase(o2.get(ATTRIBUTE_STATUS_TIME));
 		}
 	}
 }
