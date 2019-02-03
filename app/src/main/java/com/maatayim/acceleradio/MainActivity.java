@@ -265,7 +265,9 @@ OnMarkerDragListener, OnMarkerClickListener{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		fusedLocationService.stopListening();
+		if (fusedLocationService !=null) {
+			fusedLocationService.stopListening();
+		}
 		Crouton.cancelAllCroutons();
 		f.delete();
 	}

@@ -61,6 +61,30 @@ public class MyLocationMarker {
 
         avgMarker.setVisible(visebility);
     }
+    public static void setMylocationTitle(String title) {
+        setC4netMarkerTitle(title);
+        setDeviceMarkerTitle(title);
+        setAvgMarkerTitle(title);
+    }
+    public static void setC4netMarkerTitle(String title) {
+        if (c4netMarker == null) return;
+        c4netMarker.setTitle(title);
+        c4netMarker.showInfoWindow();
+    }
+
+    public static void setDeviceMarkerTitle(String title) {
+        if (deviceMarker == null) return;
+
+        deviceMarker.setTitle(title);
+        deviceMarker.showInfoWindow();
+    }
+
+    public static void setAvgMarkerTitle(String title) {
+        if (avgMarker == null) return;
+
+        avgMarker.setTitle(title);
+        avgMarker.showInfoWindow();
+    }
 
     private static Marker getMarker(GoogleMap map, LatLng location) {
         return map.addMarker(new MarkerOptions()
