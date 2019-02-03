@@ -9,4 +9,5 @@ public class Parameters {
 	public static final int ZOOM_LEVEL = 10; // tal 180902 was 15
 	public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
 	public static final int[] SUPPORTED_MAPS = {GoogleMap.MAP_TYPE_NORMAL, GoogleMap.MAP_TYPE_SATELLITE, GoogleMap.MAP_TYPE_TERRAIN};
+	public static final String DELIMITER = "~<>";
 }

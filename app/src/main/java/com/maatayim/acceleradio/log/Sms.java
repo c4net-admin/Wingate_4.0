@@ -15,6 +15,8 @@ import com.maatayim.acceleradio.chat.ChatFragment;
 import com.maatayim.acceleradio.chat.ChatMessage;
 import com.maatayim.acceleradio.utils.FormatException;
 
+import static com.maatayim.acceleradio.Parameters.DELIMITER;
+
 public class Sms extends LogEntry {
 	
 	private static final String SMS = "T";
@@ -29,7 +31,7 @@ public class Sms extends LogEntry {
 	}
 
 	private void parseStr() throws FormatException {
-		if (entry.endsWith("\n")){
+		if (entry.endsWith(DELIMITER)){
 			entry = entry.substring(0,entry.length()-1);
 		}
 		String[] data = entry.split(",");
@@ -39,7 +41,7 @@ public class Sms extends LogEntry {
 		macAddresss = data[2];
 		text = "";
 		for (int i = 3; i<data.length; i++){
-			if (data[i].equals("\n")) return;
+			if (data[i].equals(DELIMITER)) return;
 			text += data[i];
 			if (i < data.length-1){
 				text += ",";

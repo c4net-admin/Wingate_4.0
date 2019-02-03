@@ -93,6 +93,7 @@ import java.util.Set;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
+import static com.maatayim.acceleradio.Parameters.DELIMITER;
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
 
 
@@ -339,13 +340,15 @@ OnMarkerDragListener, OnMarkerClickListener{
 			case UsbService.MESSAGE_FROM_SERIAL_PORT:
 				String data = (String) msg.obj;
 				incomingData += data;
-				if (data.equals("\n")){
+				if (data.equals(DELIMITER)){
+//				    data.replace(DELIMITER,"\n");
 					mActivity.get().onDataReceived(incomingData);
 					incomingData = "";
 				}
-				else if (data.contains("\n")){
-					String[] buffer = incomingData.split("\n");
+				else if (data.contains(DELIMITER)){
+					String[] buffer = incomingData.split(DELIMITER);
 					incomingData = buffer[0];
+//					incomingData.replace(DELIMITER,"\n");
 					mActivity.get().onDataReceived(incomingData);
 					incomingData = "";
 					for (int i = 1; i<buffer.length; i++)
@@ -424,7 +427,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
 		Prefs.getInstance(this).addStatusMessages(m);
 
-		LogFile.getInstance(this).appendLog("RX: " + (msg.contains("\n") ? msg.substring(0,msg.length()-1) : msg));
+		LogFile.getInstance(this).appendLog("RX: " + (msg.contains(DELIMITER) ? msg.substring(0,msg.length()-3) : msg));
 		String error = "";
 		LogEntry le = null;
 		try {
