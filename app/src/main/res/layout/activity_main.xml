@@ -76,6 +76,18 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/locate_me"
+        android:layout_width="@dimen/btn_size"
+        android:layout_height="@dimen/btn_size"
+        android:layout_alignBottom="@+id/chat_container"
+        android:layout_marginLeft="@dimen/panel_padding"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/my_location"
+        android:clickable="true"
+        android:onClick="menuButtonAction" >
+    </ImageView>
+
+    <ImageView
         android:id="@+id/chat_container"
         android:layout_width="@dimen/btn_size"
         android:layout_height="@dimen/btn_size"

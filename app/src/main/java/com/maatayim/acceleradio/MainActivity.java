@@ -1,6 +1,7 @@
 package com.maatayim.acceleradio;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -495,6 +496,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 
 
+	@SuppressLint("MissingPermission")
 	private void mapSettings(){
 		map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		map.setOnMapClickListener(this);
@@ -1042,7 +1044,12 @@ OnMarkerDragListener, OnMarkerClickListener{
 			openChat();
 			((ImageView)findViewById(R.id.chat_btn)).clearAnimation();
 			((ImageView)findViewById(R.id.chat_btn)).setVisibility(View.INVISIBLE);
-			break;	
+			break;
+		case R.id.locate_me:
+			initMapViewLocation();
+
+			break;
+
 		}
 	}
 
