@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 
 public class LogFragment extends Fragment {
@@ -28,6 +29,8 @@ public class LogFragment extends Fragment {
 	
 	private void initStatusDataMessages(View view) {
 		ArrayList<Map<String, String>> statusMessages = Prefs.getStatusMessages();
+		ValueComparator bvc = new ValueComparator(statusMessages);
+
 		sAdapter = new SimpleAdapter(getActivity(), statusMessages, R.layout.log_item_view ,Prefs.getFrom(), Prefs.getToMessages());
 		ListView lvSimple = (ListView) view.findViewById(R.id.statusListView);
 		lvSimple.setAdapter(sAdapter);
@@ -37,6 +40,21 @@ public class LogFragment extends Fragment {
 	public static void notifyChanges(){
 		if (sAdapter != null){
 			sAdapter.notifyDataSetChanged();
+		}
+	}
+
+	class ValueComparator implements Comparator<String> {
+		ArrayList<Map<String, String>> base;
+
+		public ValueComparator(ArrayList<Map<String, String>> base) {
+			this.base = base;
+		}
+
+		// Note: this comparator imposes orderings that are inconsistent with
+		// equals.
+		public int compare(String a, String b) {
+			return base.get(a).compareToIgnoreCase(base.get(b);
+
 		}
 	}
 }

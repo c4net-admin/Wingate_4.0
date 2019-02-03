@@ -114,4 +114,6 @@ public class General {
 		PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 		return pInfo.versionName;
 	}
+
+
 }
