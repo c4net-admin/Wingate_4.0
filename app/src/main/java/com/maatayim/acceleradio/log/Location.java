@@ -15,6 +15,8 @@ import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.util.HashMap;
 
+import static com.maatayim.acceleradio.Parameters.DELIMITER;
+
 public class Location extends LogEntry {
 
     private static final String LOCATION = "L";
@@ -33,7 +35,7 @@ public class Location extends LogEntry {
     }
 
     private void parseStr() throws FormatException {
-        if (entry.endsWith("\n")) {
+        if (entry.endsWith(DELIMITER)) {
             entry = entry.substring(0, entry.length() - 1);
         }
         String[] data = entry.split(",");
@@ -109,7 +111,7 @@ public class Location extends LogEntry {
 
             //TODO when there will be new function get self hw info implement same flow there
             // Check if the me is same as saved me or reset map and log file
-            if (!TextUtils.isEmpty(myMac) && macAddress.equals(myMac)){
+            if (!TextUtils.isEmpty(myMac) && !TextUtils.isEmpty(macAddress) && !macAddress.equals(myMac)){
                 MapUtils.clearMap(mainActivity);
                 LogFile.resetInstance();
             }
