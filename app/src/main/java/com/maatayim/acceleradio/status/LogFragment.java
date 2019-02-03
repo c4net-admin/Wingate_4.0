@@ -4,8 +4,11 @@ import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.R;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -37,6 +40,12 @@ public class LogFragment extends Fragment {
 		ListView lvSimple = (ListView) view.findViewById(R.id.statusListView);
 		lvSimple.setAdapter(sAdapter);
 		lvSimple.setSelection(statusMessages.size()-1);
+		lvSimple.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
 	}
 
 	public static void notifyChanges(){
@@ -47,7 +56,13 @@ public class LogFragment extends Fragment {
 
 
 		if (sAdapter != null){
-			sAdapter.notifyDataSetChanged();
+			Handler handler = new Handler(Looper.getMainLooper());
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					sAdapter.notifyDataSetChanged();
+				}
+			});
 		}
 	}
 
