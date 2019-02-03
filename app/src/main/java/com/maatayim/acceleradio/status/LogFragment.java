@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class LogFragment extends Fragment {
 	
 	private static SimpleAdapter sAdapter;
@@ -24,10 +27,11 @@ public class LogFragment extends Fragment {
 	}
 	
 	private void initStatusDataMessages(View view) {
-		sAdapter = new SimpleAdapter(getActivity(), Prefs.getStatusMessages(), R.layout.log_item_view ,Prefs.getFrom(), Prefs.getToMessages());
+		ArrayList<Map<String, String>> statusMessages = Prefs.getStatusMessages();
+		sAdapter = new SimpleAdapter(getActivity(), statusMessages, R.layout.log_item_view ,Prefs.getFrom(), Prefs.getToMessages());
 		ListView lvSimple = (ListView) view.findViewById(R.id.statusListView);
 		lvSimple.setAdapter(sAdapter);
-		lvSimple.setSelection(Prefs.getStatusMessages().size()-1);
+		lvSimple.setSelection(statusMessages.size()-1);
 	}
 	
 	public static void notifyChanges(){
