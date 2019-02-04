@@ -10,7 +10,7 @@ import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.utils.FormatException;
 
-import static com.maatayim.acceleradio.Parameters.DELIMITER;
+import static com.maatayim.acceleradio.Parameters.DELIMITER_RX;
 
 public class Icon extends LogEntry {
 
@@ -34,7 +34,7 @@ public class Icon extends LogEntry {
 
 	private void parseStr() throws FormatException {
 
-		if (entry.endsWith(DELIMITER)){
+		if (entry.endsWith(DELIMITER_RX)){
 			entry = entry.substring(0,entry.length()-1);
 		}
 		String[] data = entry.split(",");

@@ -2,7 +2,10 @@ package com.maatayim.acceleradio.log;
 
 import android.text.TextUtils;
 
+import com.maatayim.acceleradio.Parameters;
 import com.maatayim.acceleradio.utils.FormatException;
+
+import static com.maatayim.acceleradio.Parameters.*;
 
 
 public class LogEntryBuilder {
@@ -27,6 +30,8 @@ public class LogEntryBuilder {
 					return new Sms(str);
 				case 'S':
 					return new Log(str);
+				case 'A':
+					return new Ack(str);
 			}
 		}
 		

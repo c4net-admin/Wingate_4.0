@@ -25,6 +25,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -93,8 +94,12 @@ import java.util.Set;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
-import static com.maatayim.acceleradio.Parameters.DELIMITER;
+import static com.maatayim.acceleradio.Parameters.ACK;
+import static com.maatayim.acceleradio.Parameters.DELIMITER_RX;
+import static com.maatayim.acceleradio.Parameters.DELIMITER_TX;
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
+import static com.maatayim.acceleradio.Parameters.SUB_DELIMITER;
+import static com.maatayim.acceleradio.usbserial.UsbService.getMessageCounter;
 
 
 public class MainActivity extends Activity
@@ -340,15 +345,15 @@ OnMarkerDragListener, OnMarkerClickListener{
 			case UsbService.MESSAGE_FROM_SERIAL_PORT:
 				String data = (String) msg.obj;
 				incomingData += data;
-				if (data.equals(DELIMITER)){
-//				    data.replace(DELIMITER,"\n");
+				if (data.equals(DELIMITER_RX)){
+//				    data.replace(DELIMITER_RX,"\n");
 					mActivity.get().onDataReceived(incomingData);
 					incomingData = "";
 				}
-				else if (data.contains(DELIMITER)){
-					String[] buffer = incomingData.split(DELIMITER);
+				else if (data.contains(DELIMITER_RX)){
+					String[] buffer = incomingData.split(DELIMITER_RX);
 					incomingData = buffer[0];
-//					incomingData.replace(DELIMITER,"\n");
+//					incomingData.replace(DELIMITER_RX,"\n");
 					mActivity.get().onDataReceived(incomingData);
 					incomingData = "";
 					for (int i = 1; i<buffer.length; i++)
@@ -427,11 +432,11 @@ OnMarkerDragListener, OnMarkerClickListener{
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
 		Prefs.getInstance(this).addStatusMessages(m);
 
-		LogFile.getInstance(this).appendLog("RX: " + (msg.contains(DELIMITER) ? msg.substring(0,msg.length()-3) : msg));
+		LogFile.getInstance(this).appendLog("RX: " + msg);
 		String error = "";
 		LogEntry le = null;
 		try {
-			le = LogEntryBuilder.build(msg);
+			le = LogEntryBuilder.build(msg); // pars message
 		} catch (com.maatayim.acceleradio.utils.FormatException e) {
 			e.printStackTrace();
 			error = e.getMessage();
@@ -452,9 +457,27 @@ OnMarkerDragListener, OnMarkerClickListener{
 	}
 
 	public void send(String msg){
-		if(!msg.equals(""))
+		if(!TextUtils.isEmpty(msg))
 		{
 			if(usbService != null){ // if UsbService was correctly binded, Send data
+				msg += SUB_DELIMITER + getMessageCounter() + DELIMITER_TX;
+				usbService.write(msg.getBytes(Charset.forName("UTF-8")));
+				Map<String, String> m;
+				m = new HashMap<String, String>();
+				m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "TX: " + msg.trim() + "\r\n");
+				m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
+				Prefs.getInstance(this).addStatusMessages(m);
+				LogFragment.notifyChanges();
+				LogFile.getInstance(this).appendLog("TX: " + msg);
+			}
+		}
+	}
+
+	public void sendAck(String num){
+		if(!TextUtils.isEmpty(num))
+		{
+			if(usbService != null){ // if UsbService was correctly binded, Send data
+				String msg = ACK+SUB_DELIMITER + num + DELIMITER_TX;
 				usbService.write(msg.getBytes(Charset.forName("UTF-8")));
 				Map<String, String> m;
 				m = new HashMap<String, String>();

@@ -23,6 +23,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import static com.maatayim.acceleradio.Parameters.MAX_COUNTER_LENGTH;
+
 public class UsbService extends Service
 {
 	public static final String ACTION_USB_READY = "com.felhr.connectivityservices.USB_READY";
@@ -36,6 +38,8 @@ public class UsbService extends Service
 	public static final String ACTION_USB_DISCONNECTED = "com.felhr.usbservice.USB_DISCONNECTED";
 	public static final String ACTION_CDC_DRIVER_NOT_WORKING ="com.felhr.connectivityservices.ACTION_CDC_DRIVER_NOT_WORKING";
 	public static final String ACTION_USB_DEVICE_NOT_WORKING = "com.felhr.connectivityservices.ACTION_USB_DEVICE_NOT_WORKING";
+
+	private static int messageCounter = 0;
 	
 	private static final int BAUD_RATE = 57600; // BaudRate. Change this value if you need
 	public static final int MESSAGE_FROM_SERIAL_PORT = 0;
@@ -270,4 +274,10 @@ public class UsbService extends Service
 		}
 	}
 
+	public static int getMessageCounter(){
+		if (messageCounter == MAX_COUNTER_LENGTH){
+			messageCounter = 0;
+		}
+		return messageCounter++;
+	};
 }
