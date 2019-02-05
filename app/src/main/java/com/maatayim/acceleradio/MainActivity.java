@@ -95,6 +95,7 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 import static com.maatayim.acceleradio.Parameters.ACK;
+import static com.maatayim.acceleradio.Parameters.DELIMITER;
 import static com.maatayim.acceleradio.Parameters.DELIMITER_RX;
 import static com.maatayim.acceleradio.Parameters.DELIMITER_TX;
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
@@ -345,19 +346,24 @@ OnMarkerDragListener, OnMarkerClickListener{
 			case UsbService.MESSAGE_FROM_SERIAL_PORT:
 				String data = (String) msg.obj;
 				incomingData += data;
-				if (data.equals(DELIMITER_RX)){
-//				    data.replace(DELIMITER_RX,"\n");
-					mActivity.get().onDataReceived(incomingData);
-					incomingData = "";
-				}
-				else if (data.contains(DELIMITER_RX)){
+				if (data.contains(DELIMITER_RX)) {
 					String[] buffer = incomingData.split(DELIMITER_RX);
+					if (buffer == null || buffer.length == 0){
+						return;
+					}
 					incomingData = buffer[0];
-//					incomingData.replace(DELIMITER_RX,"\n");
-					mActivity.get().onDataReceived(incomingData);
-					incomingData = "";
-					for (int i = 1; i<buffer.length; i++)
-						incomingData += buffer[i];
+					if (!TextUtils.isEmpty(incomingData) && !incomingData.substring(incomingData.length() - 1).equals("~")) {
+						incomingData += "\n";
+						mActivity.get().onDataReceived(incomingData);
+						incomingData = "";
+					}
+
+					if (buffer.length > 1) {
+						for (int i = 1; i < buffer.length; i++) {
+							incomingData += buffer[i];
+							incomingData += DELIMITER_RX;
+						}
+					}
 				}
 				break;
 			}
