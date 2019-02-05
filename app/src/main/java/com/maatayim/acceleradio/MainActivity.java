@@ -95,11 +95,11 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 import static com.maatayim.acceleradio.Parameters.ACK;
-import static com.maatayim.acceleradio.Parameters.DELIMITER;
 import static com.maatayim.acceleradio.Parameters.DELIMITER_RX;
 import static com.maatayim.acceleradio.Parameters.DELIMITER_TX;
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
 import static com.maatayim.acceleradio.Parameters.SUB_DELIMITER;
+import static com.maatayim.acceleradio.Parameters.TIME_OUT_MSEC;
 import static com.maatayim.acceleradio.usbserial.UsbService.getMessageCounter;
 
 
@@ -332,6 +332,8 @@ OnMarkerDragListener, OnMarkerClickListener{
 	{
 		private final WeakReference<MainActivity> mActivity;
 		private static String incomingData = "";
+		private long receivedTime = -1;
+		private String tempData ="";
 
 		public MyHandler(MainActivity activity) 
 		{
@@ -344,9 +346,19 @@ OnMarkerDragListener, OnMarkerClickListener{
 			switch(msg.what)
 			{
 			case UsbService.MESSAGE_FROM_SERIAL_PORT:
+				if (receivedTime < 0) {
+					receivedTime = System.currentTimeMillis();
+				}
 				String data = (String) msg.obj;
-				incomingData += data;
-				if (data.contains(DELIMITER_RX)) {
+				tempData +=data;
+
+				if (tempData.contains(DELIMITER_RX)) {
+					if (System.currentTimeMillis() - receivedTime > TIME_OUT_MSEC){ // if more then time out ignore previuse data
+						tempData = data;
+					}
+					receivedTime = -1; // data recived
+					incomingData += tempData;
+					tempData = "";
 					String[] buffer = incomingData.split(DELIMITER_RX);
 					if (buffer == null || buffer.length == 0){
 						return;

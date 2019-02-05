@@ -274,10 +274,11 @@ public class UsbService extends Service
 		}
 	}
 
-	public static int getMessageCounter(){
+	public static String getMessageCounter(){
 		if (messageCounter == MAX_COUNTER_LENGTH){
 			messageCounter = 0;
 		}
-		return messageCounter++;
+		return String.format("%02d", messageCounter++);
+
 	};
 }
