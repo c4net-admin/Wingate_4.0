@@ -103,7 +103,7 @@ GoogleApiClient.OnConnectionFailedListener {
 
 	}
 	public void stopListening(){
-		if (fusedLocationProviderApi != null) {
+		if (fusedLocationProviderApi != null && googleApiClient != null && googleApiClient.isConnected()) {
 			fusedLocationProviderApi.removeLocationUpdates(googleApiClient,
 					FusedLocationService.this);
 		}

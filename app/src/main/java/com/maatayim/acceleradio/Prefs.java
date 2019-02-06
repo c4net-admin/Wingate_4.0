@@ -106,6 +106,15 @@ public class Prefs {
         theirStatusLocations.add(m);
     }
 
+    public  void removeStatusLocation(String key){
+        for ( Map<String, String> location : statusLocations) {
+            if (location.get(Prefs.INDEX).equals(key)){
+                statusLocations.remove(location);
+                return;
+            }
+        }
+    }
+
     public static ArrayList<Map<String, String>> getStatusMessages() {
         return statusMessages;
     }

@@ -23,7 +23,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -157,6 +156,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 	private File mapsDirectory;
 	public static Set<String> markersToLoad;
 	public static Set<String> polygonsToLoad;
+	private int currentMarkCount = 1;
 
 
 	private enum DrawState{
@@ -178,6 +178,12 @@ OnMarkerDragListener, OnMarkerClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		String test = "S,151,0,Random broadcat: 6  sec:10 (6 of 10)"; //1AA1
+//		String test = "ABC";
+		test = General.addCheckSum(test);
+
+		Log.e("Vova test",test);
 
 		ActionBar bar = getActionBar();
 		bar.hide();
@@ -280,6 +286,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 			fusedLocationService.stopListening();
 		}
 		Crouton.cancelAllCroutons();
+		if (f!= null)
 		f.delete();
 	}
 
@@ -1106,6 +1113,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		String connectivity = icon ? "-" : lm.getConnectivity();
 		m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "I,1," + lm.getMac() + ","+ lm.getIconCounter() + "," + lm.getType()
 				+ "," + lm.getLocation() +"," + lm.getAge() + "," + connectivity + ",\n");
+		m.put(Prefs.INDEX,lm.getIconCounter());
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
 		m.put(Prefs.ATTRIBUTE_MARKER_NAME, lm.getTitle());
 		if (icon){
@@ -1231,6 +1239,11 @@ OnMarkerDragListener, OnMarkerClickListener{
 					<= (trash.getY()+trash.getHeight()) && screenPosition.y >= trash.getY()){
 
 				Prefs.myMarkers.remove(key).removeFromMap();
+				String[] buffer = key.split(":");
+				if (buffer.length >1) {
+					String iconCounter = buffer[1];
+					Prefs.getInstance(this).removeStatusLocation(iconCounter);
+				}
 				if (true) {
 					Prefs.markerToKey.remove(marker);
 				} else {
@@ -1476,12 +1489,12 @@ OnMarkerDragListener, OnMarkerClickListener{
 	}
 	
 	public String generateId(){
-		for (int i = Prefs.myMarkers.size(); i < 240; i++){
-			 i = i == 0 ? 1 : i ;
+		for (int i = currentMarkCount; i < 240; i++){
 			String index = General.getStringFromHex(i);
 			String key = "0000:" + index;
-			if (!Prefs.myMarkers.containsKey(key)){ // tal 180902 this return the first free
-				return index; // now we just need to mark a deleted id = D
+			if (!Prefs.myMarkers.containsKey(key)){
+				currentMarkCount = i+1;
+				return index;
 			}
 		}
 		return null;
