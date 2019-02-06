@@ -127,8 +127,8 @@ public class General {
         }
 
         if (msg.length() % 2 == 1) {
-            char zero = 0x0;
-            msg += zero;
+            char pedding = 0x0;
+            msg += pedding;
         }
 
         for (int i = 0; i < msg.length(); i += 2) {

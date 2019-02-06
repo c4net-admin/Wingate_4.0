@@ -179,12 +179,6 @@ OnMarkerDragListener, OnMarkerClickListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		String test = "S,151,0,Random broadcat: 6  sec:10 (6 of 10)"; //1AA1
-//		String test = "ABC";
-		test = General.addCheckSum(test);
-
-		Log.e("Vova test",test);
-
 		ActionBar bar = getActionBar();
 		bar.hide();
 
@@ -377,10 +371,11 @@ OnMarkerDragListener, OnMarkerClickListener{
 						 line = buffer[i];
 						if (!TextUtils.isEmpty(line)) {
 							String[] b = line.split(SUB_DELIMITER);
-								if (b.length > 1 && General.compareCheckSum(b[0],b[1]) && !b[0].contains(ACK)){
+								if ((b.length > 1 && General.compareCheckSum(b[0],b[1]) ) || b[0].contains(ACK)){
 									mActivity.get().onDataReceived(b[0]);
 								}else {
-									Log.e("CHECKSUM ", "checksum failed");
+									Log.e("vova ", "checksum failed "+b[0]);
+									Log.e("CHECKSUM ", "checksum failed"+b[0]);
 								}
 						}
 					}
