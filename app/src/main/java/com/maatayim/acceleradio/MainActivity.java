@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -221,6 +222,8 @@ OnMarkerDragListener, OnMarkerClickListener{
         }
 	}
 
+
+
 	private void initMapViewLocation() {
 
 		//Open last known location
@@ -333,7 +336,6 @@ OnMarkerDragListener, OnMarkerClickListener{
 		private final WeakReference<MainActivity> mActivity;
 		private static String incomingData = "";
 		private long receivedTime = -1;
-		private String tempData ="";
 
 		public MyHandler(MainActivity activity) 
 		{
@@ -350,30 +352,29 @@ OnMarkerDragListener, OnMarkerClickListener{
 					receivedTime = System.currentTimeMillis();
 				}
 				String data = (String) msg.obj;
-				tempData +=data;
+				incomingData +=data;
+				Log.d("Tal",incomingData);
 
-				if (tempData.contains(DELIMITER_RX)) {
+				if (incomingData.contains(DELIMITER_RX)) {
 					if (System.currentTimeMillis() - receivedTime > TIME_OUT_MSEC){ // if more then time out ignore previuse data
-						tempData = data;
+						incomingData = data;
 					}
 					receivedTime = -1; // data recived
-					incomingData += tempData;
-					tempData = "";
 					String[] buffer = incomingData.split(DELIMITER_RX);
-					if (buffer == null || buffer.length == 0){
+					incomingData = "";
+					if ( buffer.length == 0){
 						return;
 					}
-					incomingData = buffer[0];
-					if (!TextUtils.isEmpty(incomingData) && !incomingData.substring(incomingData.length() - 1).equals("~")) {
-						incomingData += "\n";
-						mActivity.get().onDataReceived(incomingData);
-						incomingData = "";
-					}
-
-					if (buffer.length > 1) {
-						for (int i = 1; i < buffer.length; i++) {
-							incomingData += buffer[i];
-							incomingData += DELIMITER_RX;
+					String line;
+					for (int i = 0; i < buffer.length; i++) {
+						 line = buffer[i];
+						if (!TextUtils.isEmpty(line)) {
+							String[] b = line.split(SUB_DELIMITER);
+							if (b.length > 0) {
+								mActivity.get().onDataReceived(b[0]);
+								if (b.length > 1)
+								Log.d("vova checksum",b[1]);
+							}
 						}
 					}
 				}
@@ -1475,8 +1476,9 @@ OnMarkerDragListener, OnMarkerClickListener{
 	}
 	
 	public String generateId(){
-		for (int i = 0; i< 100; i++){
-			String index = i < 10 ? "0"+i : ""+i;
+		for (int i = Prefs.myMarkers.size(); i < 240; i++){
+			 i = i == 0 ? 1 : i ;
+			String index = General.getStringFromHex(i);
 			String key = "0000:" + index;
 			if (!Prefs.myMarkers.containsKey(key)){ // tal 180902 this return the first free
 				return index; // now we just need to mark a deleted id = D

@@ -9,9 +9,13 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import static com.maatayim.acceleradio.Parameters.SUB_DELIMITER;
 
 public class General {
 
@@ -113,6 +117,41 @@ public class General {
 	public static String getApkVersionName(Context context) throws PackageManager.NameNotFoundException {
 		PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 		return pInfo.versionName;
+	}
+
+	public static String addCheckSum(String msg){
+		int check = 0x46;
+		int sum = 0xed;
+		int a,b;
+
+		if (TextUtils.isEmpty(msg)){
+			return msg+SUB_DELIMITER+check+sum;
+		}
+
+		if (msg.length() % 2 == 1){
+			char zero = 0x0;
+			msg += zero;
+		}
+
+		for (int i = 0; i < msg.length() - 1; i++) {
+			a = msg.charAt(i);
+			b = msg.charAt(i+1);
+
+			check= (char)( check ^ a );
+			sum = (char)( sum ^ b );
+
+		}
+
+		return msg+SUB_DELIMITER+getStringFromHex(check)+getStringFromHex(sum);
+	}
+
+	@NonNull
+	public static String getStringFromHex(int hex) {
+		String s = Integer.toHexString(hex);
+		if (s.length() == 1){
+			s = "0"+s;
+		}
+		return s;
 	}
 
 
