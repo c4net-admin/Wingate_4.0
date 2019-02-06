@@ -143,6 +143,10 @@ public class General {
 
     }
 
+    public static boolean compareCheckSum(String msg,String checkSum){
+        return getCheckSum(msg).equals(checkSum);
+    }
+
     public static String addCheckSum(String msg) {
         return msg + SUB_DELIMITER + getCheckSum(msg);
     }

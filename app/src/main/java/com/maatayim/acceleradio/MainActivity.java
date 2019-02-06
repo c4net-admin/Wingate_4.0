@@ -377,11 +377,11 @@ OnMarkerDragListener, OnMarkerClickListener{
 						 line = buffer[i];
 						if (!TextUtils.isEmpty(line)) {
 							String[] b = line.split(SUB_DELIMITER);
-							if (b.length > 0) {
-								mActivity.get().onDataReceived(b[0]);
-								if (b.length > 1)
-								Log.d("vova checksum",b[1]);
-							}
+								if (b.length > 1 && General.compareCheckSum(b[0],b[1]) && !b[0].contains(ACK)){
+									mActivity.get().onDataReceived(b[0]);
+								}else {
+									Log.e("CHECKSUM ", "checksum failed");
+								}
 						}
 					}
 				}
