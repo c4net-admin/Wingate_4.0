@@ -127,7 +127,7 @@ public class General {
         }
 
         if (msg.length() % 2 == 1) {
-            char pedding = 0x0;
+            char pedding = '@';
             msg += pedding;
         }
 

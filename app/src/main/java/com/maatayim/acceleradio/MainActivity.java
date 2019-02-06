@@ -481,7 +481,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		if(!TextUtils.isEmpty(msg))
 		{
 			if(usbService != null){ // if UsbService was correctly binded, Send data
-				msg += SUB_DELIMITER + getMessageCounter() + DELIMITER_TX;
+				msg = General.addCheckSum(msg) + SUB_DELIMITER + getMessageCounter() + DELIMITER_TX;
 				usbService.write(msg.getBytes(Charset.forName("UTF-8")));
 				Map<String, String> m;
 				m = new HashMap<String, String>();
