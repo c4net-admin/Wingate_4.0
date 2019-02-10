@@ -15,6 +15,7 @@ import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.util.HashMap;
 
+import static com.maatayim.acceleradio.Parameters.CHECKSUM_PEDDING;
 import static com.maatayim.acceleradio.Parameters.DELIMITER_RX;
 
 public class Location extends LogEntry {
@@ -35,7 +36,7 @@ public class Location extends LogEntry {
     }
 
     private void parseStr() throws FormatException {
-        if (entry.endsWith(DELIMITER_RX)) {
+        while (entry.endsWith(DELIMITER_RX) || entry.endsWith(String.valueOf(CHECKSUM_PEDDING))) {
             entry = entry.substring(0, entry.length() - 1);
         }
         String[] data = entry.split(",");

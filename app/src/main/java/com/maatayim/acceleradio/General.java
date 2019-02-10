@@ -15,6 +15,7 @@ import android.text.format.DateFormat;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import static com.maatayim.acceleradio.Parameters.CHECKSUM_PEDDING;
 import static com.maatayim.acceleradio.Parameters.SUB_DELIMITER;
 
 public class General {
@@ -127,8 +128,7 @@ public class General {
         }
 
         if (msg.length() % 2 == 1) {
-            char pedding = '@';
-            msg += pedding;
+            msg += CHECKSUM_PEDDING;
         }
 
         for (int i = 0; i < msg.length(); i += 2) {

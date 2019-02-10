@@ -29,12 +29,20 @@ public class Log extends LogEntry {
 				text += ",";
 			}
 		}
+
+
 	}
 
 	@Override
 	public void handle(Activity mainActivity, ImageView button) {
 
-		//message already added to the log
+		if (entry.contains("round")){
+			String[] buffer = entry.split("0x");
+			if (buffer.length> 1){
+				Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,buffer[1],mainActivity);
+
+			}
+		}
 	}
 
 }

@@ -1486,7 +1486,12 @@ OnMarkerDragListener, OnMarkerClickListener{
 	public String generateId(){
 		for (int i = currentMarkCount; i < 240; i++){
 			String index = General.getStringFromHex(i);
-			String key = "0000:" + index;
+			String myMac = Prefs.getPreference(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,this);
+			if (TextUtils.isEmpty(myMac)){
+				myMac = "0000";
+			}
+
+			String key = myMac+":" + index;
 			if (!Prefs.myMarkers.containsKey(key)){
 				currentMarkCount = i+1;
 				return index;

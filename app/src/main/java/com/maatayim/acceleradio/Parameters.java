@@ -14,6 +14,7 @@ public class Parameters {
 	public static final String DELIMITER_RX = "~<";
 	public static final String DELIMITER_TX = "~>";
 	public static final String SUB_DELIMITER = "~&";
+	public static final char CHECKSUM_PEDDING = '@';
 	public static final String ACK = "ACK";
 
 }
