@@ -8,6 +8,8 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.android.gms.maps.model.Marker;
+import com.maatayim.acceleradio.callsign.CallSign;
+import com.maatayim.acceleradio.callsign.CallSignFile;
 import com.maatayim.acceleradio.chat.ChatMessage;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.mapshapes.MyPolygon;
@@ -54,7 +56,9 @@ public class Prefs {
 
     public static Map<String, String> markersEnum = new HashMap<String, String>();
 
-    static Prefs instance = new Prefs();
+    private static  ArrayList<CallSign> callSigns;
+
+    static Prefs instance;
     public static boolean SHOW_CUSTOM_MAP_MODE = false;
     public static View tableView;
     public static LayoutInflater layoutInflater;
@@ -64,12 +68,23 @@ public class Prefs {
         statusMessages = new ArrayList<Map<String, String>>();
         statusLocations = new ArrayList<Map<String, String>>();
         theirStatusLocations = new ArrayList<Map<String, String>>();
+        callSigns = CallSignFile.getInstance().readFromFile();
+
+
     }
 
-    public static Prefs getInstance(Context context) {
+    public static Prefs getInstance() {
+        if (instance == null){
+            instance = new Prefs();
+        }
+
         return instance;
     }
 
+
+    public  ArrayList<CallSign> getCallSigns() {
+        return callSigns;
+    }
 
     public void addStatusMessages(Map<String, String> m) {
         statusMessages.add(m);

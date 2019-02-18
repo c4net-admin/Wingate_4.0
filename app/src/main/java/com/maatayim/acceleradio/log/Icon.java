@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.maatayim.acceleradio.General;
 import com.maatayim.acceleradio.MainActivity;
 import com.maatayim.acceleradio.Prefs;
+import com.maatayim.acceleradio.callsign.CallSign;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.utils.FormatException;
 
@@ -59,6 +60,16 @@ public class Icon extends LogEntry {
 			throw new FormatException("invalid lat/long format");
 		}
 		text = data[7] != "\n" ? data[7] : "";
+
+		for (CallSign callSign: Prefs.getInstance().getCallSigns()) {
+
+			if (callSign.getMac().equalsIgnoreCase(text)){
+				text = callSign.getName();
+				break;
+			}
+
+		}
+
 		lIcon = false;
 	}
 

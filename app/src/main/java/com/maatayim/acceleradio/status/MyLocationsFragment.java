@@ -28,7 +28,7 @@ public class MyLocationsFragment extends Fragment {
 		
 		initTitle(view);
 		initStatusDataLocations(view);
-		Log.d(TAG, "onCreateView "+Prefs.getInstance(getActivity()).getMyStatusLocations());
+		Log.d(TAG, "onCreateView "+Prefs.getInstance().getMyStatusLocations());
 		return view;
 	}
 	
@@ -57,9 +57,9 @@ public class MyLocationsFragment extends Fragment {
 
 	private void initStatusDataLocations(View view) {
 		
-		Log.d("myLocationFragment init", ""+Prefs.getInstance(getActivity()).getMyStatusLocations());
+		Log.d("myLocationFragment init", ""+Prefs.getInstance().getMyStatusLocations());
 		 locationAdapter =
-				new LocationItemAdapter(Prefs.getInstance(getActivity()).getMyStatusLocations(), getActivity());
+				new LocationItemAdapter(Prefs.getInstance().getMyStatusLocations(), getActivity());
 		
 		RecyclerView locationView =
 				(RecyclerView) view.findViewById(R.id.locationsListView);

@@ -54,6 +54,16 @@
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:text="@string/load_map_button_text" />
+    <Button
+        android:id="@+id/call_sign_button"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loadMap"
+        android:layout_alignStart="@+id/loadMap"
+        android:layout_alignLeft="@+id/loadMap"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/call_sign" />
 
 
     <TextView
@@ -86,9 +96,9 @@
         android:id="@+id/my_location_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/loadMap"
+        android:layout_below="@+id/call_sign_button"
 
-        android:layout_alignLeft="@+id/loadMap"
+        android:layout_alignLeft="@+id/call_sign_button"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="10dp"
         android:text="@string/location_source" />
@@ -97,7 +107,7 @@
         android:id="@+id/my_location_type_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/loadMap"
+        android:layout_below="@+id/call_sign_button"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/my_location_text"

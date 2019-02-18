@@ -92,7 +92,7 @@ public class LogFile {
             m = new HashMap<String, String>();
             m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "File: 180408_0202 " + filename);
             m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-            Prefs.getInstance(context).addStatusMessages(m);
+            Prefs.getInstance().addStatusMessages(m);
             LogFragment.notifyChanges();
         }
     }

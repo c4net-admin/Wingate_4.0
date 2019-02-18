@@ -59,6 +59,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.maatayim.acceleradio.callsign.CallSign;
+import com.maatayim.acceleradio.callsign.CallSignFile;
 import com.maatayim.acceleradio.chat.ChatFragment.OnSmsSent;
 import com.maatayim.acceleradio.chat.ChatMessage;
 import com.maatayim.acceleradio.log.Icon;
@@ -74,6 +76,7 @@ import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
 import com.maatayim.acceleradio.status.StatusActivity;
 import com.maatayim.acceleradio.usbserial.UsbService;
+import com.maatayim.acceleradio.utils.FormatException;
 import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
@@ -219,6 +222,34 @@ OnMarkerDragListener, OnMarkerClickListener{
             fusedLocationService = new FusedLocationService(MainActivity.this.getApplicationContext(), MainActivity.this);
 
             Prefs.layoutInflater = getLayoutInflater();
+
+            //test
+//			L,1,0048,06,00,+32.02142,+034.86126,00,4000,
+
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						com.maatayim.acceleradio.log.Location l = new com.maatayim.acceleradio.log.Location("L,1,0044,06,00,+32.02252,+034.86156,00,4000,");
+						l.handle(MainActivity.this,null);
+						l = new com.maatayim.acceleradio.log.Location("L,1,004c,06,00,+32.02252,+034.85156,00,4000,");
+						l.handle(MainActivity.this,null);
+					} catch (FormatException e) {
+						e.printStackTrace();
+					}
+				}
+			}, 2000);
+
+//			ArrayList<CallSign> callSigns1 = new ArrayList<>();
+//			callSigns1.add(new CallSign("vv","0048"));
+//			callSigns1.add(new CallSign("bb","004c"));
+//			 CallSignFile.getInstance().writeToFile(callSigns1);
+//			ArrayList<CallSign> a = CallSignFile.getInstance().readFromFile();
+//			callSigns1.add(new CallSign("33","cc"));
+
+			//test
+
         }
 	}
 
@@ -420,7 +451,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 			m = new HashMap<String, String>();
 			m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "COM: " + msg);
 			m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-			Prefs.getInstance(MainActivity.this).addStatusMessages(m);
+			Prefs.getInstance().addStatusMessages(m);
 			LogFragment.notifyChanges();
 		}
 	};
@@ -451,7 +482,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		m = new HashMap<String, String>();
 		m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "RX: " + msg);
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-		Prefs.getInstance(this).addStatusMessages(m);
+		Prefs.getInstance().addStatusMessages(m);
 
 		LogFile.getInstance(this).appendLog("RX: " + msg);
 		String error = "";
@@ -469,7 +500,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 			m = new HashMap<String, String>();
 			m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "Error: " + error + msg);
 			m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-			Prefs.getInstance(this).addStatusMessages(m);
+			Prefs.getInstance().addStatusMessages(m);
 			LogFile.getInstance(this).appendLog(error);
 			return;
 		}
@@ -487,7 +518,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 				m = new HashMap<String, String>();
 				m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "TX: " + msg.trim() + "\r\n");
 				m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-				Prefs.getInstance(this).addStatusMessages(m);
+				Prefs.getInstance().addStatusMessages(m);
 				LogFragment.notifyChanges();
 				LogFile.getInstance(this).appendLog("TX: " + msg);
 			}
@@ -504,7 +535,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 				m = new HashMap<String, String>();
 				m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "TX: " + msg.trim() + "\r\n");
 				m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-				Prefs.getInstance(this).addStatusMessages(m);
+				Prefs.getInstance().addStatusMessages(m);
 				LogFragment.notifyChanges();
 				LogFile.getInstance(this).appendLog("TX: " + msg);
 			}
@@ -702,7 +733,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		ArrayList<String> sortedMarkers = new ArrayList<String>(markers);
 		Collections.sort(sortedMarkers);
 
-		Prefs.getInstance(this).initStatusLocations();
+		Prefs.getInstance().initStatusLocations();
 		for (String s : sortedMarkers){
 			if (s.equals("")){
 				return;
@@ -735,6 +766,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 
 			LocationMarker lm = new LocationMarker(icon.getLatlng(), icon.getIconName(), map, markerBitmap, icon.getText()
 					, Integer.parseInt(index), icon.getMacAddress(), icon.getIconNumber(), icon.getAge());
+
 
 			if (isL){
 				lm.setLMarker(connectivity);
@@ -1112,7 +1144,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
 		m.put(Prefs.ATTRIBUTE_MARKER_NAME, lm.getTitle());
 		if (icon){
-			Prefs.getInstance(this).addStatusLocations(m);
+			Prefs.getInstance().addStatusLocations(m);
 			//MyLocationsFragment.notifyChanges();
 		}
 		else{
@@ -1237,7 +1269,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 				String[] buffer = key.split(":");
 				if (buffer.length >1) {
 					String iconCounter = buffer[1];
-					Prefs.getInstance(this).removeStatusLocation(iconCounter);
+					Prefs.getInstance().removeStatusLocation(iconCounter);
 				}
 				if (true) {
 					Prefs.markerToKey.remove(marker);

@@ -42,7 +42,7 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 		setContentView(R.layout.status_container);
 		initViewPager();
 		initTabView();
-		Log.d(TAG, "onCreate "+Prefs.getInstance(this).getMyStatusLocations());
+		Log.d(TAG, "onCreate "+Prefs.getInstance().getMyStatusLocations());
 	}
 	
 	
@@ -102,7 +102,7 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 		m = new HashMap<String, String>();
 		m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "UTIL: " + "Map imported");
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-		Prefs.getInstance(this).addStatusMessages(m);
+		Prefs.getInstance().addStatusMessages(m);
 		LogFragment.notifyChanges();
 		
 	}
@@ -119,8 +119,8 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 			p.clear();
 		}
 		Prefs.polygons.clear();
-		Prefs.getInstance(this).getMyStatusLocations().clear();
-		Prefs.getInstance(this).getTheirStatusLocations().clear();
+		Prefs.getInstance().getMyStatusLocations().clear();
+		Prefs.getInstance().getTheirStatusLocations().clear();
 		MyLocationsFragment.notifyChanges();
 		TheirLocationsFragment.notifyChanges();
 		MainActivity.allyCounter = 1;
@@ -186,9 +186,9 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 				+ "," + data[5] + "," + data[6] +"," + General.getAge(data[8]) + "," + connectivity + ",\n");
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
 		m.put(Prefs.ATTRIBUTE_MARKER_NAME, data[7]);
-		Prefs.getInstance(this).addStatusLocations(m);
-		Log.d(TAG, "addMarkerToList "+Prefs.getInstance(this).getMyStatusLocations());
-		Log.d("StatusActivity  ","statusLocations "+ Prefs.getInstance(this).getMyStatusLocations().toString());
+		Prefs.getInstance().addStatusLocations(m);
+		Log.d(TAG, "addMarkerToList "+Prefs.getInstance().getMyStatusLocations());
+		Log.d("StatusActivity  ","statusLocations "+ Prefs.getInstance().getMyStatusLocations().toString());
 		Log.d("addMarkerToList ", m.get(Prefs.ATTRIBUTE_STATUS_TEXT));
 		MyLocationsFragment.notifyChanges();
 		String sNoAge = s.substring(0, s.lastIndexOf(","));

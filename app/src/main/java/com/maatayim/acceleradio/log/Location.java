@@ -110,17 +110,6 @@ public class Location extends LogEntry {
 
         if (me) {
 
-            //TODO when there will be new function get self hw info implement same flow there
-            // Check if the me is same as saved me or reset map and log file
-            if (!TextUtils.isEmpty(myMac) && !TextUtils.isEmpty(macAddress) && !macAddress.equals(myMac)){
-                MapUtils.clearMap(mainActivity);
-                LogFile.resetInstance();
-            }
-
-
-
-            Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,macAddress,mainActivity);
-
             MyLocationMarker.setC4NetMarker(((MainActivity) mainActivity).map, latlng);
             MyLocationMarker.setMylocationTitle(macAddress);
             MapUtils.addMyCurrentLocation(latlng,mainActivity);
@@ -159,7 +148,7 @@ public class Location extends LogEntry {
                 String error = "Error: Location Of Me from External src";
                 m.put(Prefs.ATTRIBUTE_STATUS_TEXT, error);
                 m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-                Prefs.getInstance(mainActivity).addStatusMessages(m);
+                Prefs.getInstance().addStatusMessages(m);
                 LogFile.getInstance(mainActivity).appendLog(error);
                 return;
             }

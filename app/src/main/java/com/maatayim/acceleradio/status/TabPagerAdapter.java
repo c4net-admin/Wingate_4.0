@@ -2,6 +2,8 @@ package com.maatayim.acceleradio.status;
 
 
 import com.maatayim.acceleradio.R;
+import com.maatayim.acceleradio.callsign.CallSignFragment;
+
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,14 +25,17 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 	public static final int LOCATIONS2_FRAGMENT_INDEX = 2;
 	
 	public static final int SETTINGS_FRAGMENT_INDEX = 3;
+	
+	public static final int CALL_SIGN = 4;
 
-	public static final int TABS = 4;
+	public static final int TABS = 5;
 	
 	static final int[] TAB_TITLES = {
 		R.string.log,
 		R.string.locations1,
 		R.string.locations2,
-		R.string.settings
+		R.string.settings,
+		R.string.call_sign_tab,
 	};
 
 
@@ -51,6 +56,7 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 		fragments[LOCATIONS1_FRAGMENT_INDEX] = new MyLocationsFragment();
 		fragments[LOCATIONS2_FRAGMENT_INDEX] = new TheirLocationsFragment();
 		fragments[SETTINGS_FRAGMENT_INDEX] = new SettingsFragment();
+		fragments[CALL_SIGN] = new CallSignFragment();
 
 
 

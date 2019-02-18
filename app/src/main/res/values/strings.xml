@@ -46,6 +46,8 @@
 
     <string name="build_time">25/01/2015, 16:17</string>
     <string name="location_source">Loc src</string>
+    <string name="call_sign">Call sign</string>
+    <string name="call_sign_tab">CALL SIGN</string>
 
     <string-array name="location_source_arrays">
         <item>C4Net</item>

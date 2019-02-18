@@ -53,7 +53,7 @@ public class TheirLocationsFragment extends Fragment {
 	private void initStatusDataLocations(View view) {
 		
 		locationAdapter =
-				new LocationItemAdapter(Prefs.getInstance(getActivity()).getTheirStatusLocations(), getActivity());
+				new LocationItemAdapter(Prefs.getInstance().getTheirStatusLocations(), getActivity());
 		
 		RecyclerView locationView =
 				(RecyclerView) view.findViewById(R.id.locations2ListView);

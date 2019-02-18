@@ -27,8 +27,8 @@ public class MapUtils {
             p.clear();
         }
         Prefs.polygons.clear();
-        Prefs.getInstance(context).getMyStatusLocations().clear();
-        Prefs.getInstance(context).getTheirStatusLocations().clear();
+        Prefs.getInstance().getMyStatusLocations().clear();
+        Prefs.getInstance().getTheirStatusLocations().clear();
         MyLocationsFragment.notifyChanges();
         TheirLocationsFragment.notifyChanges();
         MainActivity.allyCounter = 1;

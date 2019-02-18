@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+     android:layout_margin="20dp" >
+     
+	<include 
+	    layout="@layout/call_sign_item"/>
+	
+	<View 
+	    android:layout_height="2dp"
+	    android:layout_width="fill_parent"
+	    android:background="@android:color/darker_gray"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/call_sign_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+         android:scrollbars="vertical"/>
+  
+
+</LinearLayout>

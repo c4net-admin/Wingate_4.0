@@ -44,7 +44,7 @@ public class LocationItemAdapter extends RecyclerView.Adapter<LocationItemHolder
 	private ArrayList<Map<String, String>> itemsList;
 	
 	public LocationItemAdapter(ArrayList<Map<String, String>> list, Context context) {
-		Log.d("LocationItemAdapterClass", "LocationItemAdapter");
+		Log.d("LocationItemAdapter", "LocationItemAdapter");
 		Log.d("constructor,", ""+list);
 		itemsList = list;
 		this.context = context;
@@ -52,7 +52,7 @@ public class LocationItemAdapter extends RecyclerView.Adapter<LocationItemHolder
 
 	@Override
 	public int getItemCount() {
-		Log.d("LocationItemAdapterClass", "getItemCount" + itemsList.size() + " instance " + itemsList);
+		Log.d("LocationItemAdapter", "getItemCount" + itemsList.size() + " instance " + itemsList);
 
 		return itemsList.size();
 	}
@@ -60,7 +60,7 @@ public class LocationItemAdapter extends RecyclerView.Adapter<LocationItemHolder
 
 	@Override
 	public void onBindViewHolder(LocationItemHolder holder, int position) {
-		Log.d("LocationItemAdapterClass", "onBindViewHolder");
+		Log.d("LocationItemAdapter", "onBindViewHolder");
 		String[] data = itemsList.get(position).get(Prefs.ATTRIBUTE_STATUS_TEXT).split(",");
 		holder.serialNumber.setText(String.valueOf(position));
 		holder.name.setText(itemsList.get(position).get(Prefs.ATTRIBUTE_MARKER_NAME));
@@ -74,7 +74,7 @@ public class LocationItemAdapter extends RecyclerView.Adapter<LocationItemHolder
 
 	@Override
 	public LocationItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		Log.d("LocationItemAdapterClass", "onCreateViewHolder");
+		Log.d("LocationItemAdapter", "onCreateViewHolder");
 
 		View v = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.locations_item_view, parent, false);

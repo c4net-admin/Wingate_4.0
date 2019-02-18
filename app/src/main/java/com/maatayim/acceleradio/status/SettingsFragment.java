@@ -1,8 +1,6 @@
 package com.maatayim.acceleradio.status;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -24,9 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maatayim.acceleradio.General;
-import com.maatayim.acceleradio.MainActivity;
 import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.R;
+import com.maatayim.acceleradio.callsign.CallSignFragment;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.mapshapes.MyPolygon;
 import com.maatayim.acceleradio.utils.MapUtils;
@@ -41,8 +39,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import static com.maatayim.acceleradio.General.getApkVersionName;
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
@@ -108,6 +104,18 @@ public class SettingsFragment extends Fragment {
 				fileFragment.show(getFragmentManager(), "fileChooser");
 			}
 		});
+		Button callSign = (Button) view.findViewById(R.id.call_sign_button);
+		callSign.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				CallSignFragment nextFrag= new CallSignFragment();
+				getActivity().getSupportFragmentManager().beginTransaction()
+						.replace(R.id.viewpager, nextFrag, "findThisFragment")
+						.addToBackStack(null)
+						.commit();
+			}
+		});
 
 		TextView versionNum = (TextView) view.findViewById(R.id.version_number);
 		try {
@@ -169,7 +177,7 @@ public class SettingsFragment extends Fragment {
 		m = new HashMap<String, String>();
 		m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "UTIL: " + "Map exported");
 		m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-		Prefs.getInstance(getActivity()).addStatusMessages(m);
+		Prefs.getInstance().addStatusMessages(m);
 
 		LogFragment.notifyChanges();
 	}
