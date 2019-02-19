@@ -127,9 +127,7 @@ public class General {
             return getStringFromHex(check) + getStringFromHex(sum);
         }
 
-        if (msg.length() % 2 == 1) {
-            msg += CHECKSUM_PEDDING;
-        }
+        msg = addParityChar(msg);
 
         for (int i = 0; i < msg.length(); i += 2) {
             a = msg.charAt(i);
@@ -143,11 +141,20 @@ public class General {
 
     }
 
+    @NonNull
+    private static String addParityChar(String msg) {
+        if (msg.length() % 2 == 1) {
+            msg += CHECKSUM_PEDDING;
+        }
+        return msg;
+    }
+
     public static boolean compareCheckSum(String msg,String checkSum){
         return getCheckSum(msg).equals(checkSum);
     }
 
     public static String addCheckSum(String msg) {
+        msg = addParityChar(msg);
         return msg + SUB_DELIMITER + getCheckSum(msg);
     }
 

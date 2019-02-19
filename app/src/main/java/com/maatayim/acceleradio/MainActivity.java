@@ -90,6 +90,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeMap;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -109,6 +112,7 @@ public class MainActivity extends Activity
 
     public static final String ICON_MAX_COUNT = "Max_Count";
     public static final String NO_MAC_ID = "no_mac";
+    private static final long DELAY_MESSAGE_RESEND_MSEC = 5000;
     private Animation trash_animation;
     private float[] results = new float[2];
     private SlidingMenu chatView, statusView;
@@ -159,6 +163,12 @@ public class MainActivity extends Activity
     public static Set<String> markersToLoad;
     public static Set<String> polygonsToLoad;
     private int currentMarkCount = 1;
+    private TreeMap<Integer, String> messageBuffer = new TreeMap<>();
+    private int messageLivesCounter;
+    private final int MAX_LIVES = 3;
+    private Timer resendMessageTimer;
+    private TimerTask resendMessageTimerTask;
+
 
 
     private enum DrawState {
@@ -249,7 +259,6 @@ public class MainActivity extends Activity
         }
     }
 
-
     private void initMapViewLocation() {
 
         //Open last known location
@@ -270,6 +279,22 @@ public class MainActivity extends Activity
         setFilters();  // Start listening notifications from UsbService
         startService(UsbService.class, usbConnection, null); // Start UsbService(if it was not started before) and Bind it
         checkForLoadedMap();
+
+        resendMessageTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                resendFifoMessage();
+                if (messageLivesCounter == MAX_LIVES) {
+                    messageLivesCounter = 0;
+                    if (messageBuffer != null && messageBuffer.size() > 0) {
+                        messageBuffer.remove(messageBuffer.firstKey());
+                    }
+                }
+                messageLivesCounter++;
+
+            }
+        };
+        startResendMessageTimer();
     }
 
 
@@ -278,6 +303,26 @@ public class MainActivity extends Activity
         super.onPause();
         unregisterReceiver(mUsbReceiver);
         unbindService(usbConnection);
+
+        stopResendMessageTimer();
+
+    }
+
+    private void startResendMessageTimer() {
+        resendMessageTimer = new Timer();
+        resendMessageTimer.schedule(resendMessageTimerTask, DELAY_MESSAGE_RESEND_MSEC, DELAY_MESSAGE_RESEND_MSEC);
+    }
+
+    private void stopResendMessageTimer() {
+        if (resendMessageTimerTask != null) {
+            resendMessageTimerTask.cancel();
+            resendMessageTimerTask = null;
+        }
+        if (resendMessageTimer != null) {
+            resendMessageTimer.cancel();
+            resendMessageTimer.purge();
+            resendMessageTimer = null;
+        }
     }
 
 
@@ -385,6 +430,10 @@ public class MainActivity extends Activity
                             line = buffer[i];
                             if (!TextUtils.isEmpty(line)) {
                                 String[] b = line.split(SUB_DELIMITER);
+                                if (b[0].equals(Parameters.ACK)){
+                                    mActivity.get().onDataReceived(line);
+                                    return;
+                                }
                                 if ((b.length > 1 && General.compareCheckSum(b[0], b[1])) || b[0].contains(ACK)) {
                                     mActivity.get().onDataReceived(b[0]);
                                 } else {
@@ -486,21 +535,41 @@ public class MainActivity extends Activity
         LogFragment.notifyChanges();
     }
 
-    public void send(String msg) {
-        if (!TextUtils.isEmpty(msg)) {
-            if (usbService != null) { // if UsbService was correctly binded, Send data
-                msg = General.addCheckSum(msg) + SUB_DELIMITER + getMessageCounter() + DELIMITER_TX;
-                usbService.write(msg.getBytes(Charset.forName("UTF-8")));
-                Map<String, String> m;
-                m = new HashMap<String, String>();
-                m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "TX: " + msg.trim() + "\r\n");
-                m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
-                Prefs.getInstance().addStatusMessages(m);
-                LogFragment.notifyChanges();
-                LogFile.getInstance(this).appendLog("TX: " + msg);
-            }
+    public void getAckUpdateMessageBuffer(int num) {
+        messageBuffer.remove(num);
+        resendFifoMessage();
+    }
+
+    private void resendFifoMessage() {
+        if (messageBuffer.size() > 0) {
+            send(messageBuffer.get(messageBuffer.firstKey()));
         }
     }
+
+    public void prepareForSending(String msg) {
+        msg = msg.replace("~"," ");
+        if (!TextUtils.isEmpty(msg)) {
+            String messageCounter = getMessageCounter();
+            msg = General.addCheckSum(msg) + SUB_DELIMITER + messageCounter + DELIMITER_TX;
+            messageBuffer.put(Integer.parseInt(messageCounter), msg);
+            resendFifoMessage();
+        }
+    }
+
+    public void send(String msg) {
+        if (usbService != null) { // if UsbService was correctly binded, Send data
+            usbService.write(msg.getBytes(Charset.forName("UTF-8")));
+            Map<String, String> m;
+            m = new HashMap<String, String>();
+            m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "TX: " + msg.trim() + "\r\n");
+            m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
+            Prefs.getInstance().addStatusMessages(m);
+            LogFragment.notifyChanges();
+            LogFile.getInstance(this).appendLog("TX: " + msg);
+        }
+    }
+
+
 
     public void sendAck(String num) {
         if (!TextUtils.isEmpty(num)) {
@@ -530,7 +599,7 @@ public class MainActivity extends Activity
         }
         if (msg != null) {
             msg.handle(this, (ImageView) findViewById(R.id.chat_btn));
-            send(sms);
+            prepareForSending(sms);
         }
     }
 
@@ -1216,13 +1285,13 @@ public class MainActivity extends Activity
                 } // the motivation is to remember that icon:mac was deleted, so, a feedback report from the net would not re-alive it
                 // another ISSUE: we must increase the icon-mac numerator even if some icon were deleted and the numbers/mac are again free to re-use
 
-                send("D,1," + MY_MAC_ADDRESS + "," + index + ",\n");
+                prepareForSending("D,1," + MY_MAC_ADDRESS + "," + index + ",\n");
                 showMessage(getString(R.string.delete_marker_message), 0);
             } else {
                 LatLng point = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
                 LocationMarker lm = Prefs.myMarkers.get(key);
                 lm.move(marker.getPosition());
-                send("I,1," + MY_MAC_ADDRESS + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
+                prepareForSending("I,1," + MY_MAC_ADDRESS + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
                 showMessage(General.convertLocationToString(point), 0);
             }
         }
@@ -1440,7 +1509,7 @@ public class MainActivity extends Activity
             lm2.removeFromMap();
         }
         Prefs.markerToKey.put(m, icon.getMacAddress() + ":" + icon.getIconNumber());
-        send(s);
+        prepareForSending(s);
         addMarkerLocationToLocationList(lm, true);
 
     }
