@@ -39,7 +39,8 @@ public class Icon extends LogEntry {
 			entry = entry.substring(0,entry.length()-1);
 		}
 		String[] data = entry.split(",");
-		if (data.length != 8){
+//		I,1,0050,01,00,+32.02743,+034.88190,zzxx����������������,@
+		if (data.length < 8){
 			throw new FormatException("wrong message size");
 		}
 		macAddress = data[2];

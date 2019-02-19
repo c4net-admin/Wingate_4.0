@@ -93,6 +93,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -113,6 +114,7 @@ public class MainActivity extends Activity
     public static final String ICON_MAX_COUNT = "Max_Count";
     public static final String NO_MAC_ID = "no_mac";
     private static final long DELAY_MESSAGE_RESEND_MSEC = 5000;
+    private static final long MSG_TIME_OUT = TimeUnit.MINUTES.toMillis(15);
     private Animation trash_animation;
     private float[] results = new float[2];
     private SlidingMenu chatView, statusView;
@@ -163,12 +165,12 @@ public class MainActivity extends Activity
     public static Set<String> markersToLoad;
     public static Set<String> polygonsToLoad;
     private int currentMarkCount = 1;
-    private TreeMap<Integer, String> messageBuffer = new TreeMap<>();
+    private TreeMap<Integer, Packet> messageBuffer = new TreeMap<>();
     private int messageLivesCounter;
     private final int MAX_LIVES = 3;
     private Timer resendMessageTimer;
     private TimerTask resendMessageTimerTask;
-
+    private boolean isUsbConnected;
 
 
     private enum DrawState {
@@ -283,15 +285,17 @@ public class MainActivity extends Activity
         resendMessageTimerTask = new TimerTask() {
             @Override
             public void run() {
-                resendFifoMessage();
-                if (messageLivesCounter == MAX_LIVES) {
-                    messageLivesCounter = 0;
-                    if (messageBuffer != null && messageBuffer.size() > 0) {
-                        messageBuffer.remove(messageBuffer.firstKey());
+                if (isUsbConnected) {
+                    resendFifoMessage();
+                    if (messageLivesCounter == MAX_LIVES) {
+                        messageLivesCounter = 0;
+                        if (messageBuffer != null && messageBuffer.size() > 0) {
+                            messageBuffer.remove(messageBuffer.firstKey());
+                        }
                     }
-                }
-                messageLivesCounter++;
+                    messageLivesCounter++;
 
+                }
             }
         };
         startResendMessageTimer();
@@ -430,7 +434,7 @@ public class MainActivity extends Activity
                             line = buffer[i];
                             if (!TextUtils.isEmpty(line)) {
                                 String[] b = line.split(SUB_DELIMITER);
-                                if (b[0].equals(Parameters.ACK)){
+                                if (b.length > 0 && b[0].equals(Parameters.ACK)){
                                     mActivity.get().onDataReceived(line);
                                     return;
                                 }
@@ -459,6 +463,7 @@ public class MainActivity extends Activity
             if (arg1.getAction().equals(UsbService.ACTION_USB_PERMISSION_GRANTED)) // USB PERMISSION GRANTED
             {
                 msg = "Cable connected";
+                isUsbConnected = true;
             } else if (arg1.getAction().equals(UsbService.ACTION_USB_PERMISSION_NOT_GRANTED)) // USB PERMISSION NOT GRANTED
             {
                 msg = "No permission granted";
@@ -469,6 +474,7 @@ public class MainActivity extends Activity
             {
                 Toast.makeText(arg0, "USB disconnected", Toast.LENGTH_SHORT).show();
                 msg = "Cable disconnected";
+                isUsbConnected = false;
             } else if (arg1.getAction().equals(UsbService.ACTION_USB_NOT_SUPPORTED)) // USB NOT SUPPORTED
             {
                 Toast.makeText(arg0, "USB device not supported", Toast.LENGTH_SHORT).show();
@@ -542,7 +548,13 @@ public class MainActivity extends Activity
 
     private void resendFifoMessage() {
         if (messageBuffer.size() > 0) {
-            send(messageBuffer.get(messageBuffer.firstKey()));
+            Integer key = messageBuffer.firstKey();
+            Packet msg = messageBuffer.get(key);
+            if (System.currentTimeMillis() - msg.getTimeMS() > MSG_TIME_OUT){
+                messageBuffer.remove(key);
+            }else {
+                send(msg.getMsg());
+            }
         }
     }
 
@@ -551,7 +563,7 @@ public class MainActivity extends Activity
         if (!TextUtils.isEmpty(msg)) {
             String messageCounter = getMessageCounter();
             msg = General.addCheckSum(msg) + SUB_DELIMITER + messageCounter + DELIMITER_TX;
-            messageBuffer.put(Integer.parseInt(messageCounter), msg);
+            messageBuffer.put(Integer.parseInt(messageCounter), new Packet(msg,System.currentTimeMillis()));
             resendFifoMessage();
         }
     }
@@ -1481,8 +1493,12 @@ public class MainActivity extends Activity
         //lon -= 671.08863; // 0.006598750076293946d;
 
         String id = generateId();
-        if (id == null) {
+        if (id.equals(ICON_MAX_COUNT) ) {
             Toast.makeText(getApplicationContext(), "Exceeded maximum markers", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (id.equals(NO_MAC_ID) ) {
+            Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
             return;
         }
 
