@@ -40,7 +40,7 @@ public class Sms extends LogEntry {
 		}
 		macAddresss = data[2];
 		text = "";
-		for (int i = 3; i<data.length; i++){
+		for (int i = 4; i<data.length; i++){
 			if (data[i].equals(DELIMITER_RX)) return;
 			text += data[i];
 			if (i < data.length-1){
@@ -63,7 +63,8 @@ public class Sms extends LogEntry {
 
 	@Override
 	public void handle(Activity mainActivity, ImageView button) {
-		boolean me = macAddresss.equals("0000");
+		String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, mainActivity);
+		boolean me = macAddresss.equals(myMac);
 		ChatMessage chatMessage = new ChatMessage(macAddresss, text, me, new Date().getTime());
 		Prefs.messages.add(chatMessage);
 		ChatFragment.adapter.notifyDataSetChanged();

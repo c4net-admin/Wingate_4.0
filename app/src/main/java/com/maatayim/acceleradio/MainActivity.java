@@ -151,7 +151,6 @@ public class MainActivity extends Activity
 
     private static final String MAP_EXTENSION = ".png";
     protected static final int MARKER_NAME_LENGTH = 10;
-    public static final String MY_MAC_ADDRESS = "0000";
     private static final String MAPS_DIRECTORY = ROOT_FOLDER + File.separator + "Maps" + File.separator;
 
     boolean isFirstLocationChange = true;
@@ -255,6 +254,9 @@ public class MainActivity extends Activity
 //			 CallSignFile.getInstance().writeToFile(callSigns1);
 //			ArrayList<CallSign> a = CallSignFile.getInstance().readFromFile();
 //			callSigns1.add(new CallSign("33","cc"));
+
+//            Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS, "vvvv",this);
+
 
             //test
 
@@ -602,7 +604,18 @@ public class MainActivity extends Activity
 
     @Override
     public void onSmsSent(String data) {
-        String sms = "T,1," + MY_MAC_ADDRESS + "," + data + "\n";
+        String id = generateId();
+        String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
+
+        if (id.equals(ICON_MAX_COUNT) ) {
+            Toast.makeText(getApplicationContext(), "Exceeded maximum sms", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (id.equals(NO_MAC_ID) ) {
+            Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String sms = "T,1," + myMac+","+id + "," + data + "\n";
         Sms msg = null;
         try {
             msg = new Sms(sms);
@@ -1276,6 +1289,17 @@ public class MainActivity extends Activity
 
         if (!isPolygon) {
 
+            String id = generateId();
+            String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
+            if (id.equals(ICON_MAX_COUNT) ) {
+                Toast.makeText(getApplicationContext(), "Exceeded maximum markers", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (id.equals(NO_MAC_ID) ) {
+                Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String key = Prefs.markerToKey.get(marker);
             String index = key.split(":")[1];
 
@@ -1297,13 +1321,13 @@ public class MainActivity extends Activity
                 } // the motivation is to remember that icon:mac was deleted, so, a feedback report from the net would not re-alive it
                 // another ISSUE: we must increase the icon-mac numerator even if some icon were deleted and the numbers/mac are again free to re-use
 
-                prepareForSending("D,1," + MY_MAC_ADDRESS + "," + index + ",\n");
+                prepareForSending("D,1," +myMac+","+ id + "," + index + ",\n");
                 showMessage(getString(R.string.delete_marker_message), 0);
             } else {
                 LatLng point = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
                 LocationMarker lm = Prefs.myMarkers.get(key);
                 lm.move(marker.getPosition());
-                prepareForSending("I,1," + MY_MAC_ADDRESS + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
+                prepareForSending("I,1," + myMac+","+id + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
                 showMessage(General.convertLocationToString(point), 0);
             }
         }
@@ -1461,7 +1485,7 @@ public class MainActivity extends Activity
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     markersName = edit_newMarkerName.getText().toString();
                     Log.d("aaaaaaaaaaaaaa", markersName);
-                    setMarker(markerStr, point, draggable, MY_MAC_ADDRESS);
+                    setMarker(markerStr, point, draggable);
                 }
 
                 return false;
@@ -1473,7 +1497,7 @@ public class MainActivity extends Activity
             @Override
             public void onClick(View v) {
                 markersName = edit_newMarkerName.getText().toString();
-                setMarker(markerStr, point, draggable, MY_MAC_ADDRESS);
+                setMarker(markerStr, point, draggable);
 
             }
         });
@@ -1481,7 +1505,7 @@ public class MainActivity extends Activity
     }
 
 
-    protected void setMarker(String markerStr, LatLng point, boolean draggable, String mac) {
+    protected void setMarker(String markerStr, LatLng point, boolean draggable) {
         if (markersName.trim().equals("")) {
             markersName = edit_newMarkerName.getHint().toString();
         }
@@ -1502,7 +1526,9 @@ public class MainActivity extends Activity
             return;
         }
 
-        String s = "I,1," + mac + "," + id + "," + Prefs.markersEnum.get(markerStr)
+        String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
+
+        String s = "I,1," + myMac + "," + id + "," + Prefs.markersEnum.get(markerStr)
                 + "," + General.precisionFormat(lat, lng) + "," + this.markersName + "\n";
         Icon icon = null;
         try {
@@ -1515,7 +1541,7 @@ public class MainActivity extends Activity
 
         markerName.cancel();
         LocationMarker lm = new LocationMarker(point, Prefs.markersEnum.get(markerStr), map, markerBitmap,
-                markersName, markerIndex++, mac, id, icon.getAge());
+                markersName, markerIndex++, myMac, id, icon.getAge());
         if (markerIndex > 99) {
             markerIndex = 1;
         }
@@ -1660,7 +1686,6 @@ public class MainActivity extends Activity
         return d;
     }
 
-
     /************************************************************************************
      ******************************* Chat and Status view *******************************
      ************************************************************************************/
@@ -1714,5 +1739,7 @@ public class MainActivity extends Activity
         return super.onKeyDown(keyCode, event);
     }
 
-
+    public void setCurrentMarkCount(int currentMarkCount) {
+        this.currentMarkCount = currentMarkCount;
+    }
 }

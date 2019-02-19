@@ -41,10 +41,18 @@ public class Log extends LogEntry {
 	public void handle(Activity mainActivity, ImageView button) {
 
 		if (entry.contains("round")){
-			String[] buffer = entry.split("0x");
-			if (buffer.length> 1){
+			String[] fullMacName = entry.split("0x");
+			if (fullMacName.length> 1){
 				String myMac = Prefs.getPreference(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,mainActivity);
-				String macAddress = buffer[1];
+				String[] buffer = fullMacName[1].split(":");
+				if (buffer.length < 2){
+					return;
+				}
+				String macAddress = buffer[0];
+				String subMac = buffer[1];
+				int currentMarkCount = Integer.decode("0x"+subMac);
+
+
 				macAddress = macAddress.replace(""+Parameters.CHECKSUM_PEDDING,"");
 
 				// Check if the me is same as saved me or reset map and log file
@@ -54,6 +62,7 @@ public class Log extends LogEntry {
 				}
 
 				Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS, macAddress,mainActivity);
+				((MainActivity)mainActivity).setCurrentMarkCount(currentMarkCount);
 			}
 		}
 	}
