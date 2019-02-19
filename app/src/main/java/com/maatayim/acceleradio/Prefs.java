@@ -218,7 +218,7 @@ public class Prefs {
 
     public static String getPreference(String pref, String key, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
-        return sp.getString(key, "1");
+        return sp.getString(key, "");
     }
 
 }

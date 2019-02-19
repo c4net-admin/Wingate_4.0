@@ -59,8 +59,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.maatayim.acceleradio.callsign.CallSign;
-import com.maatayim.acceleradio.callsign.CallSignFile;
 import com.maatayim.acceleradio.chat.ChatFragment.OnSmsSent;
 import com.maatayim.acceleradio.chat.ChatMessage;
 import com.maatayim.acceleradio.log.Icon;
@@ -76,7 +74,6 @@ import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
 import com.maatayim.acceleradio.status.StatusActivity;
 import com.maatayim.acceleradio.usbserial.UsbService;
-import com.maatayim.acceleradio.utils.FormatException;
 import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
@@ -110,6 +107,8 @@ public class MainActivity extends Activity
 implements OnMapClickListener, LocationListener, OnSmsSent,
 OnMarkerDragListener, OnMarkerClickListener{
 
+	public static final String ICON_MAX_COUNT = "Max_Count";
+	public static final String NO_MAC_ID = "no_mac";
 	private Animation trash_animation;
 	private float[] results = new float[2];
 	private SlidingMenu chatView, statusView;
@@ -226,20 +225,20 @@ OnMarkerDragListener, OnMarkerClickListener{
             //test
 //			L,1,0048,06,00,+32.02142,+034.86126,00,4000,
 
-			Handler handler = new Handler();
-			handler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						com.maatayim.acceleradio.log.Location l = new com.maatayim.acceleradio.log.Location("L,1,0044,06,00,+32.02252,+034.86156,00,4000,");
-						l.handle(MainActivity.this,null);
-						l = new com.maatayim.acceleradio.log.Location("L,1,004c,06,00,+32.02252,+034.85156,00,4000,");
-						l.handle(MainActivity.this,null);
-					} catch (FormatException e) {
-						e.printStackTrace();
-					}
-				}
-			}, 2000);
+//			Handler handler = new Handler();
+//			handler.postDelayed(new Runnable() {
+//				@Override
+//				public void run() {
+//					try {
+//						com.maatayim.acceleradio.log.Location l = new com.maatayim.acceleradio.log.Location("L,1,0044,06,00,+32.02252,+034.86156,00,4000,");
+//						l.handle(MainActivity.this,null);
+//						l = new com.maatayim.acceleradio.log.Location("L,1,004c,06,00,+32.02252,+034.85156,00,4000,");
+//						l.handle(MainActivity.this,null);
+//					} catch (FormatException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}, 2000);
 
 //			ArrayList<CallSign> callSigns1 = new ArrayList<>();
 //			callSigns1.add(new CallSign("vv","0048"));
@@ -1520,7 +1519,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 			String index = General.getStringFromHex(i);
 			String myMac = Prefs.getPreference(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,this);
 			if (TextUtils.isEmpty(myMac)){
-				myMac = "0000";
+				return NO_MAC_ID;
 			}
 
 			String key = myMac+":" + index;
@@ -1529,7 +1528,7 @@ OnMarkerDragListener, OnMarkerClickListener{
 				return index;
 			}
 		}
-		return null;
+		return ICON_MAX_COUNT;
 	}
 
 
