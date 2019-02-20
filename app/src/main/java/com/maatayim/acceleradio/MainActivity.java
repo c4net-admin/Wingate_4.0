@@ -1289,13 +1289,9 @@ public class MainActivity extends Activity
 
         if (!isPolygon) {
 
-            String id = generateId();
             String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
-            if (id.equals(ICON_MAX_COUNT) ) {
-                Toast.makeText(getApplicationContext(), "Exceeded maximum markers", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (id.equals(NO_MAC_ID) ) {
+
+            if (TextUtils.isEmpty(myMac) ) {
                 Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -1321,13 +1317,13 @@ public class MainActivity extends Activity
                 } // the motivation is to remember that icon:mac was deleted, so, a feedback report from the net would not re-alive it
                 // another ISSUE: we must increase the icon-mac numerator even if some icon were deleted and the numbers/mac are again free to re-use
 
-                prepareForSending("D,1," +myMac+","+ id + "," + index + ",\n");
+                prepareForSending("D,1," +myMac + "," + index + ",\n");
                 showMessage(getString(R.string.delete_marker_message), 0);
             } else {
                 LatLng point = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
                 LocationMarker lm = Prefs.myMarkers.get(key);
                 lm.move(marker.getPosition());
-                prepareForSending("I,1," + myMac+","+id + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
+                prepareForSending("I,1," + myMac + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
                 showMessage(General.convertLocationToString(point), 0);
             }
         }
@@ -1558,6 +1554,7 @@ public class MainActivity extends Activity
 
     public String generateId() {
         for (int i = currentMarkCount; i < 240; i++) {
+            currentMarkCount = currentMarkCount<1 ? 1: currentMarkCount;
             String index = General.getStringFromHex(i);
             String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
             if (TextUtils.isEmpty(myMac)) {

@@ -40,7 +40,7 @@ public class Sms extends LogEntry {
 		}
 		macAddresss = data[2];
 		text = "";
-		for (int i = 4; i<data.length; i++){
+		for (int i = 3; i<data.length; i++){
 			if (data[i].equals(DELIMITER_RX)) return;
 			text += data[i];
 			if (i < data.length-1){

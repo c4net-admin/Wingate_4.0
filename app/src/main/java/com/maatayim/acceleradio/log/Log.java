@@ -42,15 +42,13 @@ public class Log extends LogEntry {
 
 		if (entry.contains("round")){
 			String[] fullMacName = entry.split("0x");
-			if (fullMacName.length> 1){
+			if (fullMacName.length> 2){
 				String myMac = Prefs.getPreference(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS,mainActivity);
-				String[] buffer = fullMacName[1].split(":");
-				if (buffer.length < 2){
-					return;
-				}
-				String macAddress = buffer[0];
-				String subMac = buffer[1];
+
+				String macAddress = fullMacName[1].substring(0,4);
+				String subMac = fullMacName[2].substring(0,4);
 				int currentMarkCount = Integer.decode("0x"+subMac);
+				currentMarkCount++;
 
 
 				macAddress = macAddress.replace(""+Parameters.CHECKSUM_PEDDING,"");
@@ -63,6 +61,9 @@ public class Log extends LogEntry {
 
 				Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.MY_MAC_ADDRESS, macAddress,mainActivity);
 				((MainActivity)mainActivity).setCurrentMarkCount(currentMarkCount);
+			}else {
+				android.util.Log.e("round error", "no sub mac in round");
+				return;
 			}
 		}
 	}

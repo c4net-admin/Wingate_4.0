@@ -54,16 +54,6 @@
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:text="@string/load_map_button_text" />
-    <Button
-        android:id="@+id/call_sign_button"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/loadMap"
-        android:layout_alignStart="@+id/loadMap"
-        android:layout_alignLeft="@+id/loadMap"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
-        android:text="@string/call_sign" />
 
 
     <TextView

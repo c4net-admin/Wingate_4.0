@@ -104,18 +104,6 @@ public class SettingsFragment extends Fragment {
 				fileFragment.show(getFragmentManager(), "fileChooser");
 			}
 		});
-		Button callSign = (Button) view.findViewById(R.id.call_sign_button);
-		callSign.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				CallSignFragment nextFrag= new CallSignFragment();
-				getActivity().getSupportFragmentManager().beginTransaction()
-						.replace(R.id.viewpager, nextFrag, "findThisFragment")
-						.addToBackStack(null)
-						.commit();
-			}
-		});
 
 		TextView versionNum = (TextView) view.findViewById(R.id.version_number);
 		try {
