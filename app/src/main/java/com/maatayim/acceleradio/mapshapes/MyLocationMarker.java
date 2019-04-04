@@ -40,7 +40,7 @@ public class MyLocationMarker {
         if (avgMarker == null) {
             avgMarker = getMarker(map, latLng);
         } else {
-            deviceMarker.setPosition(latLng);
+            avgMarker.setPosition(latLng);
         }
     }
 

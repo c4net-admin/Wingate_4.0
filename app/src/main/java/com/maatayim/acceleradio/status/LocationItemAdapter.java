@@ -66,7 +66,7 @@ public class LocationItemAdapter extends RecyclerView.Adapter<LocationItemHolder
 		holder.name.setText(itemsList.get(position).get(Prefs.ATTRIBUTE_MARKER_NAME));
 		holder.mac.setText(data[2] + ":" + data[3]);
 		holder.location.setText(data[5] + "," + data[6]);
-		holder.age.setText(General.getAge(data[7]));
+		holder.age.setText(itemsList.get(position).get(Prefs.ATTRIBUTE_AGE));
 		holder.connectivity.setText(data[8]);
 		if(data[8].equals("-")) holder.connectivity.setVisibility(View.GONE);
 		

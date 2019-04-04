@@ -25,9 +25,11 @@ public class Prefs {
     public final static String ATTRIBUTE_STATUS_TEXT = "text";
     public final static String ATTRIBUTE_STATUS_TIME = "time";
     public static final String ATTRIBUTE_MARKER_NAME = "name";
+    public static final String ATTRIBUTE_AGE = "age";
     public static final String SHAPES = "shapes";
     public static final String MY_LOCATION_TYPE = "my_location_type";
     public static final String MY_MAC_ADDRESS = "my_mac_address";
+    public static final String LOCATION_TIME = "location_time";
     public static final String LAST_LATITUDE = "last_latitude";
     public static final String LAST_LONGITUDE = "last_longitude";
     public static final String USER_INFO = "user_info";

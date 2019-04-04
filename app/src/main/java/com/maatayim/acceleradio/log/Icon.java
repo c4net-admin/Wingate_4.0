@@ -62,6 +62,12 @@ public class Icon extends LogEntry {
 		}
 		text = data[7] != "\n" ? data[7] : "";
 
+		getNameFromCallSign();
+
+		lIcon = false;
+	}
+
+	private void getNameFromCallSign() {
 		for (CallSign callSign: Prefs.getInstance().getCallSigns()) {
 
 			if (callSign.getMac().equalsIgnoreCase(text)){
@@ -70,8 +76,6 @@ public class Icon extends LogEntry {
 			}
 
 		}
-
-		lIcon = false;
 	}
 
 	public void setLIcon(String age){

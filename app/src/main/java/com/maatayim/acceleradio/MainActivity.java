@@ -74,6 +74,7 @@ import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
 import com.maatayim.acceleradio.status.StatusActivity;
 import com.maatayim.acceleradio.usbserial.UsbService;
+import com.maatayim.acceleradio.utils.FormatException;
 import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
@@ -172,6 +173,8 @@ public class MainActivity extends Activity
     private boolean isUsbConnected;
 
 
+    double lat = 32.02124;
+
     private enum DrawState {
         Enemy,
         Ally,
@@ -233,15 +236,17 @@ public class MainActivity extends Activity
             //test
 //			L,1,0048,06,00,+32.02142,+034.86126,00,4000,
 
-//			Handler handler = new Handler();
+//			final Handler handler = new Handler();
 //			handler.postDelayed(new Runnable() {
 //				@Override
 //				public void run() {
 //					try {
-//						com.maatayim.acceleradio.log.Location l = new com.maatayim.acceleradio.log.Location("L,1,0044,06,00,+32.02252,+034.86156,00,4000,");
+//
+//                        String myLoc = "L,1,004C,14,01,+"+lat+",+034.86096,00,0040,!,";
+//                        lat += 0.001;
+//						com.maatayim.acceleradio.log.Location l = new com.maatayim.acceleradio.log.Location(myLoc);
 //						l.handle(MainActivity.this,null);
-//						l = new com.maatayim.acceleradio.log.Location("L,1,004c,06,00,+32.02252,+034.85156,00,4000,");
-//						l.handle(MainActivity.this,null);
+//                        handler.postDelayed(this,1000);
 //					} catch (FormatException e) {
 //						e.printStackTrace();
 //					}
@@ -436,7 +441,7 @@ public class MainActivity extends Activity
                             line = buffer[i];
                             if (!TextUtils.isEmpty(line)) {
                                 String[] b = line.split(SUB_DELIMITER);
-                                if (b.length > 0 && b[0].equals(Parameters.ACK)){
+                                if (b.length > 0 && b[0].equals(Parameters.ACK)) {
                                     mActivity.get().onDataReceived(line);
                                     return;
                                 }
@@ -552,20 +557,20 @@ public class MainActivity extends Activity
         if (messageBuffer.size() > 0) {
             Integer key = messageBuffer.firstKey();
             Packet msg = messageBuffer.get(key);
-            if (System.currentTimeMillis() - msg.getTimeMS() > MSG_TIME_OUT){
+            if (System.currentTimeMillis() - msg.getTimeMS() > MSG_TIME_OUT) {
                 messageBuffer.remove(key);
-            }else {
+            } else {
                 send(msg.getMsg());
             }
         }
     }
 
     public void prepareForSending(String msg) {
-        msg = msg.replace("~"," ");
+        msg = msg.replace("~", " ");
         if (!TextUtils.isEmpty(msg)) {
             String messageCounter = getMessageCounter();
             msg = General.addCheckSum(msg) + SUB_DELIMITER + messageCounter + DELIMITER_TX;
-            messageBuffer.put(Integer.parseInt(messageCounter), new Packet(msg,System.currentTimeMillis()));
+            messageBuffer.put(Integer.parseInt(messageCounter), new Packet(msg, System.currentTimeMillis()));
             resendFifoMessage();
         }
     }
@@ -582,7 +587,6 @@ public class MainActivity extends Activity
             LogFile.getInstance(this).appendLog("TX: " + msg);
         }
     }
-
 
 
     public void sendAck(String num) {
@@ -607,15 +611,15 @@ public class MainActivity extends Activity
         String id = generateId();
         String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
 
-        if (id.equals(ICON_MAX_COUNT) ) {
+        if (id.equals(ICON_MAX_COUNT)) {
             Toast.makeText(getApplicationContext(), "Exceeded maximum sms", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (id.equals(NO_MAC_ID) ) {
+        if (id.equals(NO_MAC_ID)) {
             Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
             return;
         }
-        String sms = "T,1," + myMac+","+id + "," + data + "\n";
+        String sms = "T,1," + myMac + "," + id + "," + data + "\n";
         Sms msg = null;
         try {
             msg = new Sms(sms);
@@ -933,7 +937,7 @@ public class MainActivity extends Activity
             showMessage(General.convertLocationToString(point) + ", " + mes + " " + Math.round(results[0]) +
                     getString(R.string.unit_abbreviation) + ", " + getString(R.string.rule_message_angle) + Math.round(azimut) + ".", 0);
         } else {
-            showMessage("No Location Service", 2);
+//            showMessage("No Location Service", 2);
         }
         return false;
     }
@@ -983,29 +987,54 @@ public class MainActivity extends Activity
 
         int myLocationType = Prefs.getSharedPreferencesInt(Prefs.USER_INFO, Prefs.MY_LOCATION_TYPE, this);
         MapUtils.addMyCurrentLocation(mapCenter, this);
+        double nowTime = System.currentTimeMillis();
         switch (myLocationType) {
             case MyLocationMarker.C4NET_LOCATION:
-                MyLocationMarker.setDeviceMarkerVisible(false);
-                MyLocationMarker.setAvgMarkerVisible(false);
+                double lastUpdateDeviceLocation = Prefs.getSharedPreferencesDouble(Prefs.USER_INFO, Prefs.LOCATION_TIME, this);
+                if ((nowTime - lastUpdateDeviceLocation) > TimeUnit.MINUTES.toMillis(1)) {
+                    activeDeviceLocation();
+                } else {
 
-                MyLocationMarker.setC4netMarkerVisible(true);
+                    activeC4netLocation();
+                }
                 break;
 
             case MyLocationMarker.AVRAGE_LOCATION:
-                MyLocationMarker.setC4netMarkerVisible(false);
-                MyLocationMarker.setDeviceMarkerVisible(false);
-
-                MyLocationMarker.setAvgMarker(map);
-                MyLocationMarker.setAvgMarkerVisible(true);
+                activeAvrageLocation();
 
                 break;
             case MyLocationMarker.DEVICE_LOCATION:
-                MyLocationMarker.setC4netMarkerVisible(false);
-                MyLocationMarker.setAvgMarkerVisible(false);
-
-                MyLocationMarker.setDeviceMarkerVisible(true);
+                Prefs.setSharedPreferencesDouble(Prefs.USER_INFO, Prefs.LOCATION_TIME, nowTime, this);
+                activeDeviceLocation();
                 break;
         }
+//      L,1,0034,00,01,+32.02124,+034.86126,00,4000,!,
+        String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
+        String msg = "L,1," + myMac + ",00,01,+" + mapCenter.latitude + ",+" + mapCenter.longitude + ",00,zzzz,!,";
+        LogFile.getInstance(this).appendLog("RX: " + msg);
+
+    }
+
+    private void activeAvrageLocation() {
+        MyLocationMarker.setC4netMarkerVisible(false);
+        MyLocationMarker.setDeviceMarkerVisible(false);
+
+        MyLocationMarker.setAvgMarker(map);
+        MyLocationMarker.setAvgMarkerVisible(true);
+    }
+
+    private void activeC4netLocation() {
+        MyLocationMarker.setDeviceMarkerVisible(false);
+        MyLocationMarker.setAvgMarkerVisible(false);
+
+        MyLocationMarker.setC4netMarkerVisible(true);
+    }
+
+    private void activeDeviceLocation() {
+        MyLocationMarker.setC4netMarkerVisible(false);
+        MyLocationMarker.setAvgMarkerVisible(false);
+
+        MyLocationMarker.setDeviceMarkerVisible(true);
     }
 
 
@@ -1068,7 +1097,7 @@ public class MainActivity extends Activity
     private void drawRuler(LatLng point) {
         Double dist = ruler.addPoint(point);
         if (dist == null) {
-            showMessage("No Location Service", 2);
+//            showMessage("No Location Service", 2);
             return;
         }
         int distance = (int) dist.doubleValue();
@@ -1181,6 +1210,8 @@ public class MainActivity extends Activity
         m.put(Prefs.INDEX, lm.getIconCounter());
         m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
         m.put(Prefs.ATTRIBUTE_MARKER_NAME, lm.getTitle());
+        m.put(Prefs.ATTRIBUTE_AGE, General.getAge(lm.getAge()));
+
         if (icon) {
             Prefs.getInstance().addStatusLocations(m);
             //MyLocationsFragment.notifyChanges();
@@ -1291,7 +1322,7 @@ public class MainActivity extends Activity
 
             String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
 
-            if (TextUtils.isEmpty(myMac) ) {
+            if (TextUtils.isEmpty(myMac)) {
                 Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -1317,7 +1348,7 @@ public class MainActivity extends Activity
                 } // the motivation is to remember that icon:mac was deleted, so, a feedback report from the net would not re-alive it
                 // another ISSUE: we must increase the icon-mac numerator even if some icon were deleted and the numbers/mac are again free to re-use
 
-                prepareForSending("D,1," +myMac + "," + index + ",\n");
+                prepareForSending("D,1," + myMac + "," + index + ",\n");
                 showMessage(getString(R.string.delete_marker_message), 0);
             } else {
                 LatLng point = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
@@ -1420,7 +1451,7 @@ public class MainActivity extends Activity
                     showMessage(General.convertLocationToString(point) + ", " + mes + " " + Math.round(results[0]) +
                             getString(R.string.unit_abbreviation) + ", " + getString(R.string.rule_message_angle) + Math.round(azimut) + ".", 0);
                 } else {
-                    showMessage("No Location Service", 2);
+//                    showMessage("No Location Service", 2);
                 }
                 break;
             case Line:
@@ -1505,6 +1536,7 @@ public class MainActivity extends Activity
         if (markersName.trim().equals("")) {
             markersName = edit_newMarkerName.getHint().toString();
         }
+        markersName += ",";
 
         double lat = General.truncDouble(point.latitude, 5);
         double lng = General.truncDouble(point.longitude, 5);
@@ -1513,11 +1545,11 @@ public class MainActivity extends Activity
         //lon -= 671.08863; // 0.006598750076293946d;
 
         String id = generateId();
-        if (id.equals(ICON_MAX_COUNT) ) {
+        if (id.equals(ICON_MAX_COUNT)) {
             Toast.makeText(getApplicationContext(), "Exceeded maximum markers", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (id.equals(NO_MAC_ID) ) {
+        if (id.equals(NO_MAC_ID)) {
             Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -1537,10 +1569,8 @@ public class MainActivity extends Activity
 
         markerName.cancel();
         LocationMarker lm = new LocationMarker(point, Prefs.markersEnum.get(markerStr), map, markerBitmap,
-                markersName, markerIndex++, myMac, id, icon.getAge());
-        if (markerIndex > 99) {
-            markerIndex = 1;
-        }
+                markersName, 0, myMac, id, icon.getAge());
+
         Marker m = lm.placeOnMap();
         LocationMarker lm2 = Prefs.myMarkers.put(icon.getMacAddress() + ":" + icon.getIconNumber(), lm);
         if (lm2 != null) {
@@ -1554,7 +1584,7 @@ public class MainActivity extends Activity
 
     public String generateId() {
         for (int i = currentMarkCount; i < 240; i++) {
-            currentMarkCount = currentMarkCount<1 ? 1: currentMarkCount;
+            currentMarkCount = currentMarkCount < 1 ? 1 : currentMarkCount;
             String index = General.getStringFromHex(i);
             String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
             if (TextUtils.isEmpty(myMac)) {

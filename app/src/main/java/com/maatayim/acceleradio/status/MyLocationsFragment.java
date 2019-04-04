@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 public class MyLocationsFragment extends Fragment {
 	
-	private static final String TAG = "200apps.MyLocationsFragment";
+	private static final String TAG = "MyLocationsFragment";
 	private static LocationItemAdapter locationAdapter;
 		
 	

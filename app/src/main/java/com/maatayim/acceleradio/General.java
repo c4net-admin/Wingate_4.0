@@ -105,7 +105,7 @@ public class General {
         long now = new Date().getTime();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        return dateFormat.format(new Date(now - (time * 1000)));
+        return dateFormat.format(new Date((time )));
     }
 
 

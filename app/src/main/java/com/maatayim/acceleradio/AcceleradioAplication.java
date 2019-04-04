@@ -3,6 +3,8 @@ import android.app.Application;
 
 
 public class AcceleradioAplication extends Application {
+
+
 	
 	@Override
 	public void onCreate() {
