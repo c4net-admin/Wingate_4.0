@@ -8,8 +8,8 @@ android {
         applicationId "com.maatayim.acceleradio"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 14       // increment with every release
-        versionName getDate()  // change with every release
+        versionCode 15       // increment with every release
+        versionName "2.h "+getDate()  // change with every release
     }
 
     buildTypes {

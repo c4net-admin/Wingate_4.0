@@ -74,7 +74,6 @@ import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
 import com.maatayim.acceleradio.status.StatusActivity;
 import com.maatayim.acceleradio.usbserial.UsbService;
-import com.maatayim.acceleradio.utils.FormatException;
 import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
@@ -116,6 +115,7 @@ public class MainActivity extends Activity
     public static final String NO_MAC_ID = "no_mac";
     private static final long DELAY_MESSAGE_RESEND_MSEC = 5000;
     private static final long MSG_TIME_OUT = TimeUnit.MINUTES.toMillis(15);
+    private static final long DELAY_FOR_TEST_CONNECTION = 5000;
     private Animation trash_animation;
     private float[] results = new float[2];
     private SlidingMenu chatView, statusView;
@@ -174,6 +174,10 @@ public class MainActivity extends Activity
 
 
     double lat = 32.02124;
+
+
+    private String testConnectionMessageCounter;
+    public boolean isTestConnection = false;
 
     private enum DrawState {
         Enemy,
@@ -467,10 +471,13 @@ public class MainActivity extends Activity
         @Override
         public void onReceive(Context arg0, Intent arg1) {
             String msg = "";
+            int type = 0;
             if (arg1.getAction().equals(UsbService.ACTION_USB_PERMISSION_GRANTED)) // USB PERMISSION GRANTED
             {
                 msg = "Cable connected";
+                type = 2;
                 isUsbConnected = true;
+                checkConnetion();
             } else if (arg1.getAction().equals(UsbService.ACTION_USB_PERMISSION_NOT_GRANTED)) // USB PERMISSION NOT GRANTED
             {
                 msg = "No permission granted";
@@ -488,7 +495,7 @@ public class MainActivity extends Activity
                 msg = "USB device not supported";
             }
 
-            showMessage(msg, msg.equals("Cable connected") ? 0 : 2);
+            showMessage(msg, type);
             LogFile.getInstance(MainActivity.this).appendLog("COM: " + msg);
             Map<String, String> m;
             m = new HashMap<String, String>();
@@ -548,6 +555,13 @@ public class MainActivity extends Activity
         LogFragment.notifyChanges();
     }
 
+    public void testConnectionReciver(int num) {
+        int testMassageNum = Integer.parseInt(testConnectionMessageCounter);
+        if (testMassageNum == num){
+            isTestConnection = true;
+            showMessage("serial test successes", 2);
+        }
+    }
     public void getAckUpdateMessageBuffer(int num) {
         messageBuffer.remove(num);
         resendFifoMessage();
@@ -563,6 +577,41 @@ public class MainActivity extends Activity
                 send(msg.getMsg());
             }
         }
+    }
+
+
+    public void checkConnetion() {
+        String messageCounter = getMessageCounter();
+        testConnectionMessageCounter = messageCounter;
+        String msg = General.addCheckSum("serial test") + SUB_DELIMITER + messageCounter + DELIMITER_TX;
+        messageBuffer.put(Integer.parseInt(messageCounter), new Packet(msg, System.currentTimeMillis()));
+        resendFifoMessage();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            String message = "serial test failed";
+            @Override
+            public void run() {
+
+                if (!isTestConnection){
+
+                    Map<String, String> m;
+                    m = new HashMap<String, String>();
+                    m.put(Prefs.ATTRIBUTE_STATUS_TEXT, "COM: " + message);
+                    m.put(Prefs.ATTRIBUTE_STATUS_TIME, General.getDate());
+                    Prefs.getInstance().addStatusMessages(m);
+                    LogFragment.notifyChanges();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showMessage(message, 2);
+                        }
+                    });
+                }
+
+            }
+        }, DELAY_FOR_TEST_CONNECTION);
     }
 
     public void prepareForSending(String msg) {
@@ -937,7 +986,7 @@ public class MainActivity extends Activity
             showMessage(General.convertLocationToString(point) + ", " + mes + " " + Math.round(results[0]) +
                     getString(R.string.unit_abbreviation) + ", " + getString(R.string.rule_message_angle) + Math.round(azimut) + ".", 0);
         } else {
-//            showMessage("No Location Service", 2);
+            showMessage("No Location Service", 2);
         }
         return false;
     }
@@ -1097,7 +1146,7 @@ public class MainActivity extends Activity
     private void drawRuler(LatLng point) {
         Double dist = ruler.addPoint(point);
         if (dist == null) {
-//            showMessage("No Location Service", 2);
+            showMessage("No Location Service", 2);
             return;
         }
         int distance = (int) dist.doubleValue();
@@ -1451,7 +1500,7 @@ public class MainActivity extends Activity
                     showMessage(General.convertLocationToString(point) + ", " + mes + " " + Math.round(results[0]) +
                             getString(R.string.unit_abbreviation) + ", " + getString(R.string.rule_message_angle) + Math.round(azimut) + ".", 0);
                 } else {
-//                    showMessage("No Location Service", 2);
+                    showMessage("No Location Service", 2);
                 }
                 break;
             case Line:

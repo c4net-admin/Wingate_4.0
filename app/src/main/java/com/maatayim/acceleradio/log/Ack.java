@@ -30,6 +30,9 @@ class Ack extends LogEntry {
 
     @Override
     public void handle(Activity mainActivity, ImageView button) {
+        if (!((MainActivity)mainActivity).isTestConnection){
+            ((MainActivity)mainActivity).testConnectionReciver(num);
+        }
         //todo handel received ack
         ((MainActivity)mainActivity).getAckUpdateMessageBuffer(num);
     }
