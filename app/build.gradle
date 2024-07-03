@@ -2,14 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.maatayim.acceleradio"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 15       // increment with every release
-        versionName "2.h "+getDate()  // change with every release
+        versionCode 16       // increment with every release
+        versionName "3.a "+getDate()  // change with every release
     }
 
     buildTypes {
@@ -18,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    namespace 'com.maatayim.acceleradio'
 }
 
 def getDate() {

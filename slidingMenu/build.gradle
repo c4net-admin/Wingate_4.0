@@ -4,7 +4,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.4'
+        classpath 'com.android.tools.build:gradle:8.4.2'
     }
 }
 apply plugin: 'com.android.library'
@@ -15,7 +15,7 @@ dependencies {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '28.0.3'
+    namespace 'com.jeremyfeinstein.slidingmenu.lib'
 
     defaultConfig {
         minSdkVersion 19
@@ -33,6 +33,10 @@ android {
 
             manifest.srcFile 'AndroidManifest.xml'
         }
+    }
+    buildFeatures {
+        renderScript true
+        aidl true
     }
 
 }
