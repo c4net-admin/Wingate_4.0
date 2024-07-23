@@ -5,9 +5,9 @@ import com.maatayim.acceleradio.R;
 import com.maatayim.acceleradio.callsign.CallSignFragment;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 
 
@@ -63,7 +63,7 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 	}
 
 	/**
-	 * Return the {@link android.support.v4.app.Fragment} to be displayed at {@code position}.
+	 * Return the {@link androidx.fragment.app.Fragment} to be displayed at {@code position}.
 	 * <p>
 	 * Here we return the value returned from {@link SamplePagerItem#createFragment()}.
 	 */

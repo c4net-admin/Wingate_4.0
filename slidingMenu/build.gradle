@@ -10,16 +10,16 @@ buildscript {
 apply plugin: 'com.android.library'
 
 dependencies {
-    implementation 'com.android.support:support-v4:13.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
 }
 
 android {
-    compileSdkVersion 26
+    compileSdk 34
     namespace 'com.jeremyfeinstein.slidingmenu.lib'
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 26
+        minSdkVersion 21
+        targetSdkVersion 34
     }
 
     sourceSets {
