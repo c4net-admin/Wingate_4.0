@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileProvider;
+import com.maatayim.acceleradio.utils.FileUtils;
 
 import android.os.Environment;
 
@@ -75,7 +76,7 @@ public class CustomMapTileProvider implements TileProvider {
 //    }
 
     private File getTileFile(int x, int y, int zoom) {
-        File sdcard = Environment.getExternalStorageDirectory();
+        File sdcard = FileUtils.getRootDir();
         String tileFile = "/maps/" + dir + zoom + '/' + x + '/' + y + fileExtension;
         File file = new File(sdcard,tileFile);
         return file;

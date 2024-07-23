@@ -74,6 +74,7 @@ import com.maatayim.acceleradio.mapshapes.Ruler;
 import com.maatayim.acceleradio.status.LogFragment;
 import com.maatayim.acceleradio.status.StatusActivity;
 import com.maatayim.acceleradio.usbserial.UsbService;
+import com.maatayim.acceleradio.utils.FileUtils;
 import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
@@ -709,10 +710,17 @@ public class MainActivity extends Activity
 
 
     private void initMapsDirectory() {
-        mapsDirectory = new File(Environment.getExternalStorageDirectory(), MAPS_DIRECTORY);
+        mapsDirectory = new File(FileUtils.getRootDir(), MAPS_DIRECTORY);
         mapsDirectory.mkdirs();
 
         f = new File(mapsDirectory, "a.a");
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         FileWriter mapWriter = null;
         try {
             mapWriter = new FileWriter(f, true);

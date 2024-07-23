@@ -27,6 +27,7 @@ import com.maatayim.acceleradio.R;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.mapshapes.MyPolygon;
 import com.maatayim.acceleradio.utils.DisplayUtils;
+import com.maatayim.acceleradio.utils.FileUtils;
 import com.maatayim.acceleradio.utils.SlidingTabLayout;
 
 public class StatusActivity extends AppCompatActivity implements FileChooserFragment.OnFileSelectedListener {
@@ -136,7 +137,7 @@ public class StatusActivity extends AppCompatActivity implements FileChooserFrag
 	
 	public void ReadFileFromDevice(String filename){
 		filename = SettingsFragment.EXPORTED_MAPS_DIRECTORY + filename;
-		File Root = Environment.getExternalStorageDirectory();
+		File Root = FileUtils.getRootDir();
 		File mapFile = new File(Root, filename);
 		try {
 			FileReader mapReader = new FileReader(mapFile);

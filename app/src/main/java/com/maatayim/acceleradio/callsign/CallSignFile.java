@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.maatayim.acceleradio.utils.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -56,7 +57,7 @@ public class CallSignFile {
 
             String directoryName = ROOT_FOLDER + File.separator;
 
-            File dir = Environment.getExternalStorageDirectory();
+            File dir = FileUtils.getRootDir();
             //create folder
             File folder = new File(dir, File.separator + directoryName + CALL_SIGN_FOLDER); //folder name
             if (!folder.exists()) {

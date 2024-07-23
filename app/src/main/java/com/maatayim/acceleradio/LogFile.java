@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.maatayim.acceleradio.status.LogFragment;
+import com.maatayim.acceleradio.utils.FileUtils;
 
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
 
@@ -53,7 +54,7 @@ public class LogFile {
 
             String directoryName = ROOT_FOLDER + File.separator;
 
-            File dir = Environment.getExternalStorageDirectory();
+            File dir = FileUtils.getRootDir();
             //create folder
             File folder = new File(dir, File.separator + directoryName + "Logs"); //folder name
             if (!folder.exists()) {

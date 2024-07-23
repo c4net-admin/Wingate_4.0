@@ -37,6 +37,7 @@ import com.maatayim.acceleradio.callsign.CallSignFragment;
 import com.maatayim.acceleradio.mapshapes.LocationMarker;
 import com.maatayim.acceleradio.mapshapes.MyPolygon;
 import com.maatayim.acceleradio.usbserial.UsbService;
+import com.maatayim.acceleradio.utils.FileUtils;
 import com.maatayim.acceleradio.utils.MapUtils;
 
 import java.io.BufferedWriter;
@@ -263,7 +264,7 @@ public class SettingsFragment extends Fragment {
 		/*
 		 * Function to initially create the log file and it also writes the time of creation to file.
 		 */
-		File Root = Environment.getExternalStorageDirectory();
+		File Root = FileUtils.getRootDir();
 		if(Root.canWrite()){
 			new File(Root, EXPORTED_MAPS_DIRECTORY).mkdirs();
 			mapFile = new File(Root, filename);

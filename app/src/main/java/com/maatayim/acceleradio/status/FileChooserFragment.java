@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.maatayim.acceleradio.R;
+import com.maatayim.acceleradio.utils.FileUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -135,7 +136,7 @@ public class FileChooserFragment extends DialogFragment{
 
 		private FileAdapter getFiles() {
 			SharedPreferences options = PreferenceManager.getDefaultSharedPreferences(getActivity());
-			File Root = Environment.getExternalStorageDirectory();
+			File Root = FileUtils.getRootDir();
 			String baseDir = Root + File.separator + SettingsFragment.EXPORTED_MAPS_DIRECTORY;
 			ArrayList<File> files = getFilesInDir(baseDir);
 

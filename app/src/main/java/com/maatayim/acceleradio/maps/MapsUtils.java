@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.gms.maps.model.UrlTileProvider;
+import com.maatayim.acceleradio.utils.FileUtils;
 
 public class MapsUtils {
 	
@@ -57,7 +58,7 @@ public class MapsUtils {
 			@Override
 			public Tile getTile(int arg0, int arg1, int arg2) {
 
-				File f = new File(Environment.getExternalStorageDirectory().getPath() + "\\" + MAP_PATH);
+				File f = new File(FileUtils.getRootDir().getPath() + "\\" + MAP_PATH);
 				Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath());
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
