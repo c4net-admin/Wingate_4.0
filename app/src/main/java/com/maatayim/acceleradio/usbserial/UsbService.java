@@ -19,6 +19,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -156,7 +157,12 @@ public class UsbService extends Service
 		filter.addAction(ACTION_USB_PERMISSION);
 		filter.addAction(ACTION_USB_DETACHED);
 		filter.addAction(ACTION_USB_ATTACHED);
-		registerReceiver(usbReceiver , filter);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			registerReceiver(usbReceiver, filter, Context.RECEIVER_EXPORTED);
+		} else {
+			registerReceiver(usbReceiver, filter);
+
+		}
 	}
 	
 	/*

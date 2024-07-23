@@ -18,6 +18,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -404,7 +405,12 @@ public class MainActivity extends Activity
         filter.addAction(UsbService.ACTION_USB_DISCONNECTED);
         filter.addAction(UsbService.ACTION_USB_NOT_SUPPORTED);
         filter.addAction(UsbService.ACTION_USB_PERMISSION_NOT_GRANTED);
-        registerReceiver(mUsbReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mUsbReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(mUsbReceiver, filter);
+
+        }
     }
 
 
