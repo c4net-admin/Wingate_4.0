@@ -23,6 +23,7 @@
         android:name="com.maatayim.acceleradio.AcceleradioAplication" >
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
             <intent-filter>
@@ -34,11 +35,13 @@
 
         <service
             android:name="com.maatayim.acceleradio.usbserial.UsbService"
+            android:exported="false"
             android:enabled="true" >
         </service>
 
         <activity
             android:name="com.maatayim.acceleradio.status.StatusActivity"
+            android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/StatusTheme" >
         </activity>
