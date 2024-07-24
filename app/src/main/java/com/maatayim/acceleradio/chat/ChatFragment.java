@@ -6,7 +6,7 @@ import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.R;
 
 import android.app.Activity;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +34,7 @@ public class ChatFragment extends Fragment {
 	public static MessagesAdapter adapter;
 	private EditText messagesEditText;
 	private ImageView send;
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

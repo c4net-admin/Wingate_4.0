@@ -5,8 +5,7 @@
    
     android:orientation="vertical" >
 
-
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/user_data_fragment"
         android:name="com.maatayim.acceleradio.chat.ChatFragment"
         android:layout_width="match_parent"

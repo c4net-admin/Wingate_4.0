@@ -24,8 +24,11 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -109,7 +112,7 @@ import static com.maatayim.acceleradio.Parameters.TIME_OUT_MSEC;
 import static com.maatayim.acceleradio.usbserial.UsbService.getMessageCounter;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends FragmentActivity
         implements OnMapClickListener, LocationListener, OnSmsSent,
         OnMarkerDragListener, OnMarkerClickListener {
 
@@ -564,11 +567,12 @@ public class MainActivity extends Activity
 
     public void testConnectionReciver(int num) {
         int testMassageNum = Integer.parseInt(testConnectionMessageCounter);
-        if (testMassageNum == num){
+        if (testMassageNum == num) {
             isTestConnection = true;
             showMessage("serial test successes", 2);
         }
     }
+
     public void getAckUpdateMessageBuffer(int num) {
         messageBuffer.remove(num);
         resendFifoMessage();
@@ -597,10 +601,11 @@ public class MainActivity extends Activity
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             String message = "serial test failed";
+
             @Override
             public void run() {
 
-                if (!isTestConnection){
+                if (!isTestConnection) {
 
                     Map<String, String> m;
                     m = new HashMap<String, String>();
@@ -720,7 +725,7 @@ public class MainActivity extends Activity
         mapsDirectory.mkdirs();
 
         f = new File(mapsDirectory, "a.a");
-        if(!f.exists()) {
+        if (!f.exists()) {
             try {
                 f.createNewFile();
             } catch (IOException e) {
@@ -1043,6 +1048,16 @@ public class MainActivity extends Activity
 
 
     public void initMapPosition(LatLng mapCenter) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         map.setMyLocationEnabled(false);
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.getUiSettings().setZoomControlsEnabled(false);
