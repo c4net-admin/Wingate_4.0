@@ -158,7 +158,7 @@ public class UsbService extends Service
 		filter.addAction(ACTION_USB_DETACHED);
 		filter.addAction(ACTION_USB_ATTACHED);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			registerReceiver(usbReceiver, filter, Context.RECEIVER_EXPORTED);
+			registerReceiver(usbReceiver, filter, null,null,Context.RECEIVER_NOT_EXPORTED);
 		} else {
 			registerReceiver(usbReceiver, filter);
 
@@ -170,7 +170,11 @@ public class UsbService extends Service
 	 */
 	private void requestUserPermission()
 	{
-		PendingIntent mPendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
+		Intent intent = new Intent(ACTION_USB_PERMISSION);
+		String appPackageName = getPackageName();
+		intent.setPackage(appPackageName);
+
+		PendingIntent mPendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE);
 		usbManager.requestPermission(device, mPendingIntent);
 	}
 	
