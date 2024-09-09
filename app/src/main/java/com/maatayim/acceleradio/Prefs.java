@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 public class Prefs {
+    public static final String TOP_URI = "top_uri";
 
     public final static String ATTRIBUTE_STATUS_TEXT = "text";
     public final static String ATTRIBUTE_STATUS_TIME = "time";

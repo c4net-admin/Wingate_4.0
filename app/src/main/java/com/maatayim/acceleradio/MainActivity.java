@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.UriPermission;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -25,10 +26,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -92,6 +96,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -183,6 +188,9 @@ public class MainActivity extends FragmentActivity
 
     private String testConnectionMessageCounter;
     public boolean isTestConnection = false;
+    private ActivityResultLauncher<Intent> storageActivityResultLauncher;
+    private ActivityResultLauncher<String[]> locationActivityResultLauncher;
+
 
     private enum DrawState {
         Enemy,
@@ -201,6 +209,40 @@ public class MainActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        storageActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        // Handle the result here
+                        Uri uri = null;
+                        if (data != null) {
+                            uri = data.getData();
+
+                            final int takeFlags =  (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
+                            String uriString = uri.toString();
+                            Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.TOP_URI, uriString,MainActivity.this);
+                            Log.d("TAG", "onCreate: path: "+uriString+" uri:"+ Uri.parse(uriString));
+
+                        }
+                    }
+                }
+        );
+
+        locationActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        onLocationPermission();
+                    }
+                    launchUriPermissionWhenNeed();
+
+                }
+        );
 
         ActionBar bar = getActionBar();
         bar.hide();
@@ -209,38 +251,13 @@ public class MainActivity extends FragmentActivity
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+            locationActivityResultLauncher.launch(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE});
 
         } else {
 
-            // FIXME: 12/14/16 Callback
-            ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    map = googleMap;
-                    if (map == null) {
-                        finish();
-                        return;
-                    }
-
-                    initMarkerEnum();
-                    mapSettings();
-                    initMapsDirectory();
-                    initChatView();
-                    initStatusView();
-                    loadSavedMap();
-                    initMapViewLocation();
-
-
-                    //usb data income handler
-                    mHandler = new MyHandler(MainActivity.this);
-                }
-            });
-
-            fusedLocationService = new FusedLocationService(MainActivity.this.getApplicationContext(), MainActivity.this);
-
-            Prefs.layoutInflater = getLayoutInflater();
+            onLocationPermission();
+            launchUriPermissionWhenNeed();
 
             //test
 //			L,1,0048,06,00,+32.02142,+034.86126,00,4000,
@@ -275,6 +292,46 @@ public class MainActivity extends FragmentActivity
             //test
 
         }
+    }
+
+    private void launchUriPermissionWhenNeed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&!LogFile.checkUriPermission()) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            String documents = "content://com.android.externalstorage.documents/document/primary%3ADocuments";
+            Uri initialUri = Uri.parse(documents);
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialUri);
+            storageActivityResultLauncher.launch(intent);
+        }
+    }
+
+
+    private void onLocationPermission() {
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+                if (map == null) {
+                    finish();
+                    return;
+                }
+
+                initMarkerEnum();
+                mapSettings();
+                initMapsDirectory();
+                initChatView();
+                initStatusView();
+                loadSavedMap();
+                initMapViewLocation();
+
+
+                //usb data income handler
+                mHandler = new MyHandler(MainActivity.this);
+            }
+        });
+
+        fusedLocationService = new FusedLocationService(MainActivity.this.getApplicationContext(), MainActivity.this);
+
+        Prefs.layoutInflater = getLayoutInflater();
     }
 
     private void initMapViewLocation() {
@@ -1555,6 +1612,7 @@ public class MainActivity extends FragmentActivity
 
 
     private void showPolygonNameDialog() {
+
         polygonName = createNewListDialog();
         polygonName.show();
         final Activity activity = this;
