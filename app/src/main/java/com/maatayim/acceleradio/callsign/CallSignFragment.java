@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.maatayim.acceleradio.LogFile;
 import com.maatayim.acceleradio.Prefs;
 import com.maatayim.acceleradio.R;
 import com.maatayim.acceleradio.status.LocationItemAdapter;
@@ -46,7 +47,7 @@ public class CallSignFragment extends Fragment {
 
 
 		callSignAdapter =
-				new CallSignAdapter(callSigns , getActivity());
+				new CallSignAdapter(callSigns !=null? callSigns: new ArrayList<>(), getActivity());
 		
 		RecyclerView callSignList =
 				(RecyclerView) view.findViewById(R.id.call_sign_list);

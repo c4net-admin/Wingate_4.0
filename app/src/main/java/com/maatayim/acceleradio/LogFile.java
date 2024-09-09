@@ -37,7 +37,7 @@ public class LogFile {
     private static LogFile instance;
     private static File logFile;
     private static DocumentFile logDocumentFile;
-    private static Context context;
+    public static Context context;
 
     private LogFile(Context context) {
         this.context = context;
@@ -61,7 +61,7 @@ public class LogFile {
         String filename = "log_" + currentDateandTime+"_"+mac + LOG_EXTENSION;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if(!checkUriPermission()) {
+            if(!FileUtils.checkUriPermission(context)) {
                 return;
             }
             DocumentFile logDirectory = FileUtils.getDirectoryDocument(context, "Logs");
@@ -120,24 +120,10 @@ public class LogFile {
 
     }
 
-    static boolean checkUriPermission() {
-        String uriString = Prefs.getSharedPreferencesString(Prefs.USER_INFO,Prefs.TOP_URI, context);
-        if(uriString==null)
-            return false;
-        Uri treeUri = Uri.parse(uriString);
-        List<UriPermission> persistedUriPermissions = context.getContentResolver().getPersistedUriPermissions();
-        for (UriPermission permission : persistedUriPermissions) {
-            if (permission.getUri().equals(treeUri) && permission.isReadPermission() && permission.isWritePermission()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private static BufferedWriter getBufferedWriter() throws IOException {
         BufferedWriter buf;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if(!checkUriPermission() || logDocumentFile==null) {
+            if(!FileUtils.checkUriPermission(context) || logDocumentFile==null) {
                 return null;
             }
             OutputStream out = context.getContentResolver().openOutputStream(logDocumentFile.getUri(),"wa");

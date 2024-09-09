@@ -1,6 +1,7 @@
 package com.maatayim.acceleradio.utils;
 
 import android.content.Context;
+import android.content.UriPermission;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
@@ -9,6 +10,7 @@ import androidx.documentfile.provider.DocumentFile;
 import com.maatayim.acceleradio.Prefs;
 
 import java.io.File;
+import java.util.List;
 
 public class FileUtils {
     private static File rootDir;
@@ -46,5 +48,19 @@ public class FileUtils {
             logDirectory = treeDocumentFile.createDirectory(directoryName);
         }
         return logDirectory;
+    }
+
+    public static boolean checkUriPermission(Context context) {
+        String uriString = Prefs.getSharedPreferencesString(Prefs.USER_INFO,Prefs.TOP_URI, context);
+        if(uriString==null)
+            return false;
+        Uri treeUri = Uri.parse(uriString);
+        List<UriPermission> persistedUriPermissions = context.getContentResolver().getPersistedUriPermissions();
+        for (UriPermission permission : persistedUriPermissions) {
+            if (permission.getUri().equals(treeUri) && permission.isReadPermission() && permission.isWritePermission()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -295,7 +295,7 @@ public class MainActivity extends FragmentActivity
     }
 
     private void launchUriPermissionWhenNeed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&!LogFile.checkUriPermission()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&!FileUtils.checkUriPermission(this)) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             String documents = "content://com.android.externalstorage.documents/document/primary%3ADocuments";
             Uri initialUri = Uri.parse(documents);

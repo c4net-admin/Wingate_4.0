@@ -3,11 +3,13 @@ package com.maatayim.acceleradio.callsign;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.maatayim.acceleradio.LogFile;
 import com.maatayim.acceleradio.utils.FileUtils;
 
 import java.io.BufferedReader;
@@ -16,6 +18,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +27,8 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.maatayim.acceleradio.Parameters.ROOT_FOLDER;
+
+import androidx.documentfile.provider.DocumentFile;
 
 public class CallSignFile {
 
@@ -33,14 +39,15 @@ public class CallSignFile {
 
     private static CallSignFile instance;
     private static File callSignFile;
+    private static DocumentFile callSignDocumentFile;
 
     private CallSignFile() {
     }
 
-    public static CallSignFile getInstance() {
-        if (instance == null) {
+    public static CallSignFile getInstance(Context context) {
+        if (context!=null&&instance == null) {
             instance = new CallSignFile();
-            getFile();
+            getFile(context);
         }
         return instance;
     }
@@ -49,8 +56,20 @@ public class CallSignFile {
         instance = null;
     }
 
-    private static void getFile() {
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+    private static void getFile(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if(!FileUtils.checkUriPermission(context)) {
+                return;
+            }
+            DocumentFile logDirectory = FileUtils.getDirectoryDocument(context, CALL_SIGN_FOLDER);
+            if (logDirectory != null) {
+                callSignDocumentFile = logDirectory.findFile( CALL_SIGN_FILE+EXTENSION);
+            } else {
+                // Handle the case where the log directory couldn't be created
+                Log.e("FileCreation", "Failed to create log directory");
+                return;
+            }
+        } else if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Log.d(TAG, "no SDCard!");
         } else {
             Log.d(TAG, "SDCard exists!");
@@ -72,32 +91,6 @@ public class CallSignFile {
         }
     }
 
-
-    public void writeToFile(ArrayList<CallSign> callSigns) {
-
-
-        try {
-            if (callSignFile.exists()){
-                callSignFile.delete();
-            }
-            Gson gson = new Gson();
-            String json = gson.toJson(callSigns, new TypeToken<ArrayList<CallSign>>() {
-            }.getType());
-//            gson.toJson(callSigns,new TypeToken<ArrayList<CallSign>>() {}.getType(), new FileWriter(callSignFile));
-
-            //BufferedWriter for performance, true to set append to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(callSignFile, true));
-            buf.append(json);
-            buf.newLine();
-            buf.flush();
-            buf.close();
-
-        } catch (Exception e) {
-            Log.e(TAG, "writeToFile ERROR : " + e.getMessage());
-        }
-
-    }
-
     public ArrayList<CallSign> readFromFile() {
 
         //Read text from file
@@ -105,8 +98,19 @@ public class CallSignFile {
 
         try {
             Gson gson = new Gson();
-            ArrayList<CallSign> callSigns = gson.fromJson(new FileReader(callSignFile), new TypeToken<ArrayList<CallSign>>() {
-            }.getType());
+            ArrayList<CallSign> callSigns;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Log.d(TAG, "readFromFile: "+readRawContent(LogFile.context, callSignDocumentFile));
+                InputStream inputStream = LogFile.context.getContentResolver().openInputStream(callSignDocumentFile.getUri());
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                callSigns = gson.fromJson(reader, new TypeToken<ArrayList<CallSign>>() {
+                }.getType());
+                reader.close();
+
+            } else {
+                 callSigns = gson.fromJson(new FileReader(callSignFile), new TypeToken<ArrayList<CallSign>>() {
+                }.getType());
+            }
             return callSigns;
         } catch (Exception e) {
             Log.e(TAG, "readFile ERROR : " + e.getMessage());
@@ -115,5 +119,19 @@ public class CallSignFile {
         return new ArrayList<>();
     }
 
-
+    public String readRawContent(Context context, DocumentFile documentFile) {
+        StringBuilder content = new StringBuilder();
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(documentFile.getUri());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content.toString();
+    }
 }

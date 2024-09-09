@@ -59,7 +59,7 @@ public class Prefs {
 
     public static Map<String, String> markersEnum = new HashMap<String, String>();
 
-    private static  ArrayList<CallSign> callSigns;
+    private static ArrayList<CallSign> callSigns;
 
     static Prefs instance;
     public static boolean SHOW_CUSTOM_MAP_MODE = false;
@@ -71,21 +71,26 @@ public class Prefs {
         statusMessages = new ArrayList<Map<String, String>>();
         statusLocations = new ArrayList<Map<String, String>>();
         theirStatusLocations = new ArrayList<Map<String, String>>();
-        callSigns = CallSignFile.getInstance().readFromFile();
+        if (LogFile.context != null) //todo get context better)
+            callSigns = CallSignFile.getInstance(LogFile.context).readFromFile();
 
 
     }
 
     public static Prefs getInstance() {
-        if (instance == null){
+        if (instance == null) {
             instance = new Prefs();
+        }
+        if (callSigns == null) {
+            if (LogFile.context != null) //todo get context better)
+                callSigns = CallSignFile.getInstance(LogFile.context).readFromFile();
         }
 
         return instance;
     }
 
 
-    public  ArrayList<CallSign> getCallSigns() {
+    public ArrayList<CallSign> getCallSigns() {
         return callSigns;
     }
 
@@ -124,9 +129,9 @@ public class Prefs {
         theirStatusLocations.add(m);
     }
 
-    public  void removeStatusLocation(String key){
-        for ( Map<String, String> location : statusLocations) {
-            if (location.get(Prefs.INDEX).equals(key)){
+    public void removeStatusLocation(String key) {
+        for (Map<String, String> location : statusLocations) {
+            if (location.get(Prefs.INDEX).equals(key)) {
                 statusLocations.remove(location);
                 return;
             }
@@ -163,6 +168,7 @@ public class Prefs {
         editor.putString(key, value);
         editor.commit();
     }
+
     public static void setSharedPreferencesStringSet(String pref, String key, Set<String> values, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -188,6 +194,7 @@ public class Prefs {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         return sp.getString(key, null);
     }
+
     public static Set<String> getSharedPreferencesStringSet(String pref, String key, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         return sp.getStringSet(key, null);
