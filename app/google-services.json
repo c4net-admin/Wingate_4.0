@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "397435096545",
+    "project_id": "c4net-78151",
+    "storage_bucket": "c4net-78151.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:397435096545:android:629918d534e6bb203356a0",
+        "android_client_info": {
+          "package_name": "com.maatayim.acceleradio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWYjCNHto9thQx8Hb6e41YgypgpNs-Puo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
