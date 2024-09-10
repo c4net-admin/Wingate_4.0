@@ -48,6 +48,7 @@
     <string name="location_source">Loc src</string>
     <string name="terminal">Terminal</string>
     <string name="call_sign_tab">CALL SIGN</string>
+    <string name="delay_text">"Delay in Seconds"</string>
 
     <string-array name="location_source_arrays">
         <item>C4Net</item>

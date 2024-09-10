@@ -1,5 +1,6 @@
 package com.maatayim.acceleradio.status;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.os.IBinder;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,6 +107,7 @@ public class SettingsFragment extends Fragment {
 		getActivity().bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void initStatusDataSettings(View view) {
 		Switch customMapMode = (Switch) view.findViewById(R.id.customMapMode);
 		customMapMode.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -227,6 +230,34 @@ public class SettingsFragment extends Fragment {
 			}
 		});
 
+
+		EditText delayInSecondsInput = view.findViewById(R.id.delay_input);
+		long delay = Prefs.getSharedPreferencesLong(Prefs.USER_INFO,Prefs.DELAY,getContext())/1000;
+		delayInSecondsInput.setText(Long.toString(delay));
+		delayInSecondsInput.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+				Long delay;
+				try {
+					 delay = Long.parseLong(editable.toString());
+				} catch(NumberFormatException e) {
+					delay = null;
+				}
+				Prefs.setSharedPreferencesLong(Prefs.USER_INFO,Prefs.DELAY,delay!=null? delay*1000: 0,getContext());
+
+			}
+
+		});
 	}
 
 

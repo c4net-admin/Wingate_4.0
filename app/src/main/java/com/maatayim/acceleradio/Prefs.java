@@ -29,6 +29,7 @@ public class Prefs {
     public static final String ATTRIBUTE_AGE = "age";
     public static final String SHAPES = "shapes";
     public static final String MY_LOCATION_TYPE = "my_location_type";
+    public static final String DELAY = "delay";
     public static final String MY_MAC_ADDRESS = "my_mac_address";
     public static final String LOCATION_TIME = "location_time";
     public static final String LAST_LATITUDE = "last_latitude";
@@ -190,6 +191,13 @@ public class Prefs {
         editor.commit();
     }
 
+    public static void setSharedPreferencesLong(String pref, String key, long value, Context context) {
+        SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putLong(key, value);
+        editor.commit();
+    }
+
     public static String getSharedPreferencesString(String pref, String key, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         return sp.getString(key, null);
@@ -203,6 +211,11 @@ public class Prefs {
     public static int getSharedPreferencesInt(String pref, String key, Context context) {
         SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         return sp.getInt(key, 0);
+    }
+
+    public static long getSharedPreferencesLong(String pref, String key, Context context) {
+        SharedPreferences sp = context.getSharedPreferences(pref, Context.MODE_PRIVATE);
+        return sp.getLong(key, 0);
     }
 
     public static double getSharedPreferencesDouble(String pref, String key, Context context) {
