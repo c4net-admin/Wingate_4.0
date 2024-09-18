@@ -516,7 +516,7 @@ public class MainActivity extends FragmentActivity
                                     mActivity.get().onDataReceived(line);
                                     return;
                                 }
-                                if ((b.length > 1 && General.compareCheckSum(b[0], b[1])) || b[0].contains(ACK)) {
+                                if ((b.length > 1 && General.compareCheckSum(b[0], b[1])) || (b.length>0&&b[0].contains(ACK))) {
                                     mActivity.get().onDataReceived(b[0]);
                                 } else {
                                     Log.e("vova ", "checksum failed " + b[0]);
@@ -623,10 +623,12 @@ public class MainActivity extends FragmentActivity
     }
 
     public void testConnectionReciver(int num) {
-        int testMassageNum = Integer.parseInt(testConnectionMessageCounter);
-        if (testMassageNum == num) {
-            isTestConnection = true;
-            showMessage("serial test successes", 2);
+        if(testConnectionMessageCounter!=null) {
+            int testMassageNum = Integer.parseInt(testConnectionMessageCounter);
+            if (testMassageNum == num) {
+                isTestConnection = true;
+                showMessage("serial test successes", 2);
+            }
         }
     }
 
