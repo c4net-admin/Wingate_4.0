@@ -9,8 +9,8 @@ android {
         applicationId "com.maatayim.acceleradio"
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 18       // increment with every release
-        versionName "3.d_"+getDate()  // change with every release
+        versionCode 19       // increment with every release
+        versionName "3.e_"+getDate()  // change with every release
         archivesBaseName = "C4NET-v$versionName"
     }
 
