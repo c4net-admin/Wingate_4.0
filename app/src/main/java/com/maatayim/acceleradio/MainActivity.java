@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -219,13 +220,13 @@ public class MainActivity extends FragmentActivity
                         if (data != null) {
                             uri = data.getData();
 
-                            final int takeFlags =  (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
                                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                             getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
                             String uriString = uri.toString();
-                            Prefs.setSharedPreferencesString(Prefs.USER_INFO,Prefs.TOP_URI, uriString,MainActivity.this);
-                            Log.d("TAG", "onCreate: path: "+uriString+" uri:"+ Uri.parse(uriString));
+                            Prefs.setSharedPreferencesString(Prefs.USER_INFO, Prefs.TOP_URI, uriString, MainActivity.this);
+                            Log.d("TAG", "onCreate: path: " + uriString + " uri:" + Uri.parse(uriString));
 
                         }
                     }
@@ -295,7 +296,7 @@ public class MainActivity extends FragmentActivity
     }
 
     private void launchUriPermissionWhenNeed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&!FileUtils.checkUriPermission(this)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !FileUtils.checkUriPermission(this)) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             String documents = "content://com.android.externalstorage.documents/document/primary%3ADocuments";
             Uri initialUri = Uri.parse(documents);
@@ -516,7 +517,7 @@ public class MainActivity extends FragmentActivity
                                     mActivity.get().onDataReceived(line);
                                     return;
                                 }
-                                if ((b.length > 1 && General.compareCheckSum(b[0], b[1])) || (b.length>0&&b[0].contains(ACK))) {
+                                if ((b.length > 1 && General.compareCheckSum(b[0], b[1])) || (b.length > 0 && b[0].contains(ACK))) {
                                     mActivity.get().onDataReceived(b[0]);
                                 } else {
                                     Log.e("vova ", "checksum failed " + b[0]);
@@ -623,7 +624,7 @@ public class MainActivity extends FragmentActivity
     }
 
     public void testConnectionReciver(int num) {
-        if(testConnectionMessageCounter!=null) {
+        if (testConnectionMessageCounter != null) {
             int testMassageNum = Integer.parseInt(testConnectionMessageCounter);
             if (testMassageNum == num) {
                 isTestConnection = true;
@@ -690,9 +691,17 @@ public class MainActivity extends FragmentActivity
         if (!TextUtils.isEmpty(msg)) {
             String messageCounter = getMessageCounter();
             msg = General.addCheckSum(msg) + SUB_DELIMITER + messageCounter + DELIMITER_TX;
-            messageBuffer.put(Integer.parseInt(messageCounter), new Packet(msg, System.currentTimeMillis()));
-            resendFifoMessage();
-        }
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final String msgToSend = msg;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                    messageBuffer.put(Integer.parseInt(messageCounter), new Packet(msgToSend, System.currentTimeMillis()));
+                    resendFifoMessage();
+                }
+        }, Prefs.getSharedPreferencesLong(Prefs.USER_INFO,Prefs.DELAY,this)); // 5000 milliseconds = 5 seconds
+    }
     }
 
     public void send(String msg) {
@@ -1418,93 +1427,93 @@ public class MainActivity extends FragmentActivity
         LatLng markerLocation = marker.getPosition();
         Point screenPosition = projection.toScreenLocation(markerLocation);
 
-        boolean isPolygon = false;
+                boolean isPolygon = false;
 
-        for (Entry<MyPolygon, MyPolygon> poly : Prefs.polygons.entrySet()) {
-            if (poly.getValue().isMarkerOnPolygon(marker)) {
-                MyPolygon p = poly.getValue();
-                ArrayList<Marker> markers = p.getMarkers();
-                String title = p.getTitle();
-                Prefs.polygons.remove(p);
-                MyPolygon p2 = new MyPolygon(map);
-                for (Marker m : markers) {
-                    p2.addPoint(m.getPosition());
+                for (Entry<MyPolygon, MyPolygon> poly : Prefs.polygons.entrySet()) {
+                    if (poly.getValue().isMarkerOnPolygon(marker)) {
+                        MyPolygon p = poly.getValue();
+                        ArrayList<Marker> markers = p.getMarkers();
+                        String title = p.getTitle();
+                        Prefs.polygons.remove(p);
+                        MyPolygon p2 = new MyPolygon(map);
+                        for (Marker m : markers) {
+                            p2.addPoint(m.getPosition());
+                        }
+                        if (p.isClosed()) {
+                            p2.closePolygon();
+                        }
+                        p2.setTitle(title, MainActivity.this, getApplicationContext());
+                        p2.toggleEditMode(MyPolygon.EDIT_MODE_ON);
+                        p.clear();
+                        return;
+                    }
+
+                    if (poly.getValue().getTitleMarker().equals(marker)) {
+                        isPolygon = true;
+                        if (screenPosition.x <= (trash.getWidth() + trash.getX()) && screenPosition.x >= trash.getX() && screenPosition.y
+                                <= (trash.getY() + trash.getHeight()) && screenPosition.y >= trash.getY()) {
+                            MyPolygon mp = poly.getValue();
+                            Prefs.polygons.remove(mp);
+                            mp.clear();
+                            showMessage(getString(R.string.delete_polygon_message), 0);
+                        } else {
+                            MyPolygon mp = poly.getValue();
+                            mp.getTitleMarker().remove();
+                            mp.setTitle(mp.getTitle(), MainActivity.this, getApplicationContext());
+                        }
+                    }
                 }
-                if (p.isClosed()) {
-                    p2.closePolygon();
+
+                if (!isPolygon) {
+
+                    String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, MainActivity.this);
+
+                    if (TextUtils.isEmpty(myMac)) {
+                        Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String key = Prefs.markerToKey.get(marker);
+                    String index = key.split(":")[1];
+
+                    //checking place of marker and trash icon
+                    if (screenPosition.x <= (trash.getWidth() + trash.getX()) && screenPosition.x >= trash.getX() && screenPosition.y
+                            <= (trash.getY() + trash.getHeight()) && screenPosition.y >= trash.getY()) {
+
+                        Prefs.myMarkers.remove(key).removeFromMap();
+                        String[] buffer = key.split(":");
+                        if (buffer.length > 1) {
+                            String iconCounter = buffer[1];
+                            Prefs.getInstance().removeStatusLocation(iconCounter);
+                        }
+                        if (true) {
+                            Prefs.markerToKey.remove(marker);
+                        } else {
+                            // tal 180902 mark deleted icin as deleted
+                            // Prefs.markerToKey.put(m, icon.getMacAddress() + ":" + 0xDE); // tal 180902 DE for deleted
+                        } // the motivation is to remember that icon:mac was deleted, so, a feedback report from the net would not re-alive it
+                        // another ISSUE: we must increase the icon-mac numerator even if some icon were deleted and the numbers/mac are again free to re-use
+
+                        prepareForSending("D,1," + myMac + "," + index + ",\n");
+                        showMessage(getString(R.string.delete_marker_message), 0);
+                    } else {
+                        LatLng point = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+                        LocationMarker lm = Prefs.myMarkers.get(key);
+                        lm.move(marker.getPosition());
+                        prepareForSending("I,1," + myMac + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
+                        showMessage(General.convertLocationToString(point), 0);
+                    }
                 }
-                p2.setTitle(title, this, getApplicationContext());
-                p2.toggleEditMode(MyPolygon.EDIT_MODE_ON);
-                p.clear();
-                return;
-            }
+                trash_animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.trash_marker_out);
+                trash.startAnimation(trash_animation);
+                trash_animation.setAnimationListener(new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
 
-            if (poly.getValue().getTitleMarker().equals(marker)) {
-                isPolygon = true;
-                if (screenPosition.x <= (trash.getWidth() + trash.getX()) && screenPosition.x >= trash.getX() && screenPosition.y
-                        <= (trash.getY() + trash.getHeight()) && screenPosition.y >= trash.getY()) {
-                    MyPolygon mp = poly.getValue();
-                    Prefs.polygons.remove(mp);
-                    mp.clear();
-                    showMessage(getString(R.string.delete_polygon_message), 0);
-                } else {
-                    MyPolygon mp = poly.getValue();
-                    mp.getTitleMarker().remove();
-                    mp.setTitle(mp.getTitle(), this, getApplicationContext());
-                }
-            }
-        }
-
-        if (!isPolygon) {
-
-            String myMac = Prefs.getPreference(Prefs.USER_INFO, Prefs.MY_MAC_ADDRESS, this);
-
-            if (TextUtils.isEmpty(myMac)) {
-                Toast.makeText(getApplicationContext(), "No Mac address wait for next round", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String key = Prefs.markerToKey.get(marker);
-            String index = key.split(":")[1];
-
-            //checking place of marker and trash icon
-            if (screenPosition.x <= (trash.getWidth() + trash.getX()) && screenPosition.x >= trash.getX() && screenPosition.y
-                    <= (trash.getY() + trash.getHeight()) && screenPosition.y >= trash.getY()) {
-
-                Prefs.myMarkers.remove(key).removeFromMap();
-                String[] buffer = key.split(":");
-                if (buffer.length > 1) {
-                    String iconCounter = buffer[1];
-                    Prefs.getInstance().removeStatusLocation(iconCounter);
-                }
-                if (true) {
-                    Prefs.markerToKey.remove(marker);
-                } else {
-                    // tal 180902 mark deleted icin as deleted
-                    // Prefs.markerToKey.put(m, icon.getMacAddress() + ":" + 0xDE); // tal 180902 DE for deleted
-                } // the motivation is to remember that icon:mac was deleted, so, a feedback report from the net would not re-alive it
-                // another ISSUE: we must increase the icon-mac numerator even if some icon were deleted and the numbers/mac are again free to re-use
-
-                prepareForSending("D,1," + myMac + "," + index + ",\n");
-                showMessage(getString(R.string.delete_marker_message), 0);
-            } else {
-                LatLng point = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
-                LocationMarker lm = Prefs.myMarkers.get(key);
-                lm.move(marker.getPosition());
-                prepareForSending("I,1," + myMac + "," + index + "," + lm.getType() + "," + lm.getLocation() + "," + lm.getTitle() + ",\n");
-                showMessage(General.convertLocationToString(point), 0);
-            }
-        }
-        trash_animation = AnimationUtils.loadAnimation(this, R.anim.trash_marker_out);
-        trash.startAnimation(trash_animation);
-        trash_animation.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
 
             @Override
             public void onAnimationEnd(Animation animation) {
