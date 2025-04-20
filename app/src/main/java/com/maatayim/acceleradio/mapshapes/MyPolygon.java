@@ -132,10 +132,10 @@ public class MyPolygon {
 
 	public void closePolygon(){
 		polygon = map.addPolygon(new PolygonOptions()
-		.addAll(points)
-		.strokeColor(Color.BLACK)
-		.strokeWidth(10)
-		.fillColor(Color.GREEN));
+				.addAll(points)
+				.strokeColor(Color.BLACK)
+				.strokeWidth(2)//line width of close polygon-maor k changed 100425
+				.fillColor(Color.argb(50, 0, 0, 150)));//interior color of close polygon
 		for (Polyline p : lines){
 			p.remove();
 		}
