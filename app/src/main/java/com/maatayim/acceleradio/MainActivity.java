@@ -171,6 +171,7 @@ public class MainActivity extends Activity
     private Timer resendMessageTimer;
     private TimerTask resendMessageTimerTask;
     private boolean isUsbConnected;
+    int counterofPoint=0;
 
 
     double lat = 32.02124;
@@ -1176,9 +1177,15 @@ public class MainActivity extends Activity
 
     private void drawPoligon(LatLng point) {
         polygon.addPoint(point);
+       // Log.d("drawPoligon", " point added 2");
         polygonDrawing = true;
+        counterofPoint++;
+       // Log.d("drawPoligon 4", " counterofPoint " + counterofPoint);
+        if (counterofPoint > 10) {//maor k changed 150425
+            counterofPoint = 0;
+            showPolygonNameDialog();//show dialog/pop-up window( Area name) after 10 points
+        }
     }
-
 
     private void setState(DrawState state) {
         if (drawState == state) {
