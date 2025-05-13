@@ -98,7 +98,7 @@ public class MyPolygon {
 		.addAll(points)
 		.strokeColor(Color.BLACK)
 		.strokeWidth(10)
-		.fillColor(Color.argb(50, 0, 0, 150)));//interior color of close polygon-maor changed-130525
+		.fillColor(Color.argb(50, 0, 0, 150)));//interior color of close polygon-maor change-130525
 		;
 		
 		setTitle(title, activity, context);
