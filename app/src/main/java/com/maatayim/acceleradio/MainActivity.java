@@ -1279,10 +1279,14 @@ public class MainActivity extends FragmentActivity
         // Log.d("drawPoligon", " point added 2");
         polygonDrawing = true;
         counterofPoint++;
-         Log.d("drawPoligon 4", " counterofPoint " + counterofPoint);
+       //  Log.d("drawPoligon ", " counterofPoint " + counterofPoint);
         if (counterofPoint > 10) {//maor k changed 270425
+            polygon.closePolygon();//need to be called otherwise it will not disappered from map,    //maor k changed 290525
+            polygonStartOnMarker = null;//maor k changed 290525
             showPolygonNameDialog();//show dialog/pop-up window( Area name) after 10 points
-            counterofPoint = 0;
+            setState(DrawState.None);//maor k changed 290525
+            clearSelection();//maor k changed 290525
+            counterofPoint = 0;//maor k changed 270425
         }
     }
 
