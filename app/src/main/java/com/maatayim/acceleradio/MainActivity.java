@@ -1035,7 +1035,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public boolean onMarkerClick(Marker marker)
-   //this gunction called when  polygon is closed or marker is clicked
+   //this gunction called when  polygon is closed or  marker is clicked
     {
         counterofPoint=0;//maor k changed 290525-intialized points ruler polygon
          Log.d("Marker Clicked", "Marker: " + marker.getTitle() + ", Position: " + marker.getPosition());
