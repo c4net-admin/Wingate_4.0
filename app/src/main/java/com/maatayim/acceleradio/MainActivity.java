@@ -182,7 +182,7 @@ public class MainActivity extends FragmentActivity
     private Timer resendMessageTimer;
     private TimerTask resendMessageTimerTask;
     private boolean isUsbConnected;
-    int counterofPoint=0;//maor changed 27042025
+    private int counterofPoint=0;//maor changed 27042025
 
     double lat = 32.02124;
 
@@ -1034,8 +1034,11 @@ public class MainActivity extends FragmentActivity
 
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
-
+    public boolean onMarkerClick(Marker marker)
+   //this gunction called when  polygon is closed or marker is clicked
+    {
+        counterofPoint=0;//maor k changed 290525-intialized points ruler polygon
+         Log.d("Marker Clicked", "Marker: " + marker.getTitle() + ", Position: " + marker.getPosition());
         if (currentEditablePolygon != null) {
             currentEditablePolygon.toggleEditMode(MyPolygon.EDIT_MODE_OFF);
         }
@@ -1276,10 +1279,10 @@ public class MainActivity extends FragmentActivity
         // Log.d("drawPoligon", " point added 2");
         polygonDrawing = true;
         counterofPoint++;
-        // Log.d("drawPoligon 4", " counterofPoint " + counterofPoint);
+         Log.d("drawPoligon 4", " counterofPoint " + counterofPoint);
         if (counterofPoint > 10) {//maor k changed 270425
-            counterofPoint = 0;
             showPolygonNameDialog();//show dialog/pop-up window( Area name) after 10 points
+            counterofPoint = 0;
         }
     }
 
